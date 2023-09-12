@@ -8,9 +8,8 @@ description = "LaunchDarkly Migration"
 val rewriteVersion = rewriteRecipe.rewriteVersion.get()
 dependencies {
     implementation(platform("org.openrewrite:rewrite-bom:$rewriteVersion"))
-    implementation(platform("org.openrewrite.recipe:rewrite-recipe-bom:$rewriteVersion"))
     implementation("org.openrewrite:rewrite-java")
-    implementation("org.openrewrite.recipe:rewrite-java-dependencies")
+    implementation("org.openrewrite.recipe:rewrite-java-dependencies:$rewriteVersion")
 
     testImplementation("org.openrewrite:rewrite-java-17")
     testImplementation("org.openrewrite:rewrite-test")
