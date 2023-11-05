@@ -69,7 +69,50 @@ class RemoveBoolVariationTest implements RewriteTest {
                       // Application code to show the feature
                       System.out.println("Feature is on");
                   }
-              }   
+              }
+              """
+          )
+        );
+    }
+
+    @Test
+    void enablePermanentlyNegated() {
+        rewriteRun(
+          // language=java
+          java(
+            """
+              import com.launchdarkly.sdk.*;
+              import com.launchdarkly.sdk.server.*;
+              class Foo {
+                  LDClient client = new LDClient("sdk-key-123abc");
+                  void bar() {
+                      LDContext context = LDContext.builder("context-key-123abc")
+                        .name("Sandy")
+                        .build();
+                      if (!client.boolVariation("flag-key-123abc", context, false)) {
+                        // The code to run if the feature is off
+                          System.out.println("Feature is off");
+                      }
+                      else {
+                          // Application code to show the feature
+                          System.out.println("Feature is on");
+                      }
+                  }
+              }
+              """,
+            """
+              import com.launchdarkly.sdk.*;
+              import com.launchdarkly.sdk.server.*;
+              class Foo {
+                  LDClient client = new LDClient("sdk-key-123abc");
+                  void bar() {
+                      LDContext context = LDContext.builder("context-key-123abc")
+                        .name("Sandy")
+                        .build();
+                      // Application code to show the feature
+                      System.out.println("Feature is on");
+                  }
+              }
               """
           )
         );
@@ -122,7 +165,5 @@ class RemoveBoolVariationTest implements RewriteTest {
     // TODO Add additional tests for other variations of the feature flag check
     // - removal of unused LDContext
     // - removal of unused LDClient
-    // - negated `client.boolVariation` check
-    // - permanently disable flag
     // - checks other than `client.boolVariation`
 }
