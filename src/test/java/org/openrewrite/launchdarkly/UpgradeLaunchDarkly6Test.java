@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.DocumentExample;
+import org.openrewrite.InMemoryExecutionContext;
 import org.openrewrite.config.Environment;
 import org.openrewrite.java.JavaParser;
 import org.openrewrite.test.RecipeSpec;
@@ -39,7 +40,8 @@ class UpgradeLaunchDarkly6Test implements RewriteTest {
             .scanRuntimeClasspath("org.openrewrite.launchdarkly")
             .build()
             .activateRecipes("org.openrewrite.launchdarkly.UpgradeLaunchDarkly6"))
-          .parser(JavaParser.fromJavaVersion().classpath("launchdarkly-java-server-sdk"));
+          .parser(JavaParser.fromJavaVersion()
+            .classpathFromResources(new InMemoryExecutionContext(), "launchdarkly-java-server-sdk-5.10"));
     }
 
     @Nested
