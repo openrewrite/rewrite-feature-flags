@@ -56,7 +56,7 @@ public class RemoveBoolVariation extends Recipe {
     @NonNull
     Boolean replacementValue;
 
-    private static final MethodMatcher methodMatcher = new MethodMatcher("com.launchdarkly.sdk.server.LDClient boolVariation(String, com.launchdarkly.sdk.LDContext, boolean)", true);
+    private static final MethodMatcher methodMatcher = new MethodMatcher("com.launchdarkly.sdk.server.LDClient boolVariation(String, com.launchdarkly.sdk.*, boolean)", true);
 
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
