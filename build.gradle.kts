@@ -9,6 +9,7 @@ val rewriteVersion = rewriteRecipe.rewriteVersion.get()
 dependencies {
     implementation(platform("org.openrewrite:rewrite-bom:$rewriteVersion"))
     implementation("org.openrewrite:rewrite-java")
+    implementation("org.openrewrite.meta:rewrite-analysis:$rewriteVersion")
     implementation("org.openrewrite.recipe:rewrite-java-dependencies:$rewriteVersion")
 
     testImplementation("org.openrewrite:rewrite-java-17")
