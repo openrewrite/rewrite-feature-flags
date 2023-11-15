@@ -15,10 +15,10 @@
  */
 package org.openrewrite.launchdarkly;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.DocumentExample;
+import org.openrewrite.InMemoryExecutionContext;
 import org.openrewrite.config.Environment;
 import org.openrewrite.java.JavaParser;
 import org.openrewrite.test.RecipeSpec;
@@ -28,6 +28,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.openrewrite.gradle.Assertions.buildGradle;
+import static org.openrewrite.gradle.Assertions.withToolingApi;
 import static org.openrewrite.java.Assertions.java;
 import static org.openrewrite.maven.Assertions.pomXml;
 
@@ -39,13 +41,13 @@ class UpgradeLaunchDarkly6Test implements RewriteTest {
             .scanRuntimeClasspath("org.openrewrite.launchdarkly")
             .build()
             .activateRecipes("org.openrewrite.launchdarkly.UpgradeLaunchDarkly6"))
-          .parser(JavaParser.fromJavaVersion().classpath("launchdarkly-java-server-sdk"));
+          .parser(JavaParser.fromJavaVersion().classpathFromResources(new InMemoryExecutionContext(), "launchdarkly-java-server-sdk-5"));
     }
 
     @Nested
     class Dependencies {
         @Test
-        @DocumentExample
+        @DocumentExample("Maven")
         void mavenDependency() {
             rewriteRun(
               //language=xml
@@ -92,6 +94,47 @@ class UpgradeLaunchDarkly6Test implements RewriteTest {
               )
             );
         }
+
+        @Test
+        @DocumentExample("Gradle")
+        void gradleDependency() {
+            rewriteRun(
+              spec -> spec.beforeRecipe(withToolingApi()),
+              buildGradle(
+                """
+                  plugins {
+                    id "java"
+                  }
+                  
+                  repositories {
+                    mavenCentral()
+                  }
+                  
+                  dependencies {
+                    implementation "com.launchdarkly:launchdarkly-java-server-sdk:5.10.9"
+                  }
+                  """,
+                spec -> spec.after(actual -> {
+                    Matcher matcher = Pattern.compile("com\\.launchdarkly:launchdarkly-java-server-sdk:(6\\.\\d+\\.\\d+)").matcher(actual);
+                    assertTrue(matcher.find(), actual);
+                    return """
+                        plugins {
+                          id "java"
+                        }
+                        
+                        repositories {
+                          mavenCentral()
+                        }
+                        
+                        dependencies {
+                          implementation "com.launchdarkly:launchdarkly-java-server-sdk:%s"
+                        }
+                        """.formatted(matcher.group(1));
+                  }
+                )
+              )
+            );
+        }
     }
 
 
@@ -99,33 +142,102 @@ class UpgradeLaunchDarkly6Test implements RewriteTest {
     class CodeChanges {
         @Test
         @DocumentExample
-        @Disabled("Not yet implemented")
+        void builderUserToContext() {
+            rewriteRun(
+              //language=java
+              java(
+                """
+                  import com.launchdarkly.sdk.LDUser;
+                  import com.launchdarkly.sdk.LDValue;
+                  
+                  class A {
+                      void foo() {
+                          LDUser user = new LDUser.Builder("user-key-123abc")
+                                  .name("Sandy")
+                                  .email("sandy@example.com")
+                                  .custom("groups", LDValue.buildArray().add("Google").add("Microsoft").build())
+                                  .build();
+                      }
+                  }
+                  """,
+                """
+                  import com.launchdarkly.sdk.LDContext;
+                  import com.launchdarkly.sdk.LDValue;
+                  
+                  class A {
+                      void foo() {
+                          LDContext user = LDContext.builder("user-key-123abc")
+                                  .name("Sandy")
+                                  .set("email", "sandy@example.com")
+                                  .set("groups", LDValue.buildArray().add("Google").add("Microsoft").build())
+                                  .build();
+                      }
+                  }
+                  """
+              )
+            );
+        }
+
+        @Test
         void userToContext() {
             rewriteRun(
               //language=java
               java(
                 """
+                  import com.launchdarkly.sdk.LDUser;
+                  
                   class A {
                     void foo() {
-                      LDUser user = new LDUser.Builder("user-key-123abc")
-                        .name("Sandy")
-                        .email("sandy@example.com")
-                        .custom("groups",
-                          LDValue.buildArray().add("Google").add("Microsoft").build())
-                        .build();
+                      LDUser user = new LDUser("user-key-123abc");
                     }
                   }
                   """,
                 """
+                  import com.launchdarkly.sdk.LDContext;
+                  
                   class A {
                     void foo() {
-                      LDContext context = LDContext.builder("user-key-123abc")
-                        .name("Sandy")
-                        .set("email", "sandy@example.com")
-                         .set("groups",
-                          LDValue.buildArray().add("Google").add("Microsoft").build())
-                        .build();
+                      LDContext user = LDContext.create("user-key-123abc");
                     }
+                  }
+                  """
+              )
+            );
+        }
+
+        @Test
+        void privateAttribute() {
+            rewriteRun(
+              //language=java
+              java(
+                """
+                  import com.launchdarkly.sdk.LDUser;
+                  import com.launchdarkly.sdk.LDValue;
+                  
+                  class A {
+                      void foo() {
+                          LDUser user = new LDUser.Builder("user-key-123abc")
+                                  .name("Sandy")
+                                  .privateEmail("sandy@example.com")
+                                  .privateCustom("groups", LDValue.buildArray().add("Google").add("Microsoft").build())
+                                  .build();
+                      }
+                  }
+                  """,
+                """
+                  import com.launchdarkly.sdk.LDContext;
+                  import com.launchdarkly.sdk.LDValue;
+                  
+                  class A {
+                      void foo() {
+                          LDContext user = LDContext.builder("user-key-123abc")
+                                  .name("Sandy")
+                                  .set("email", "sandy@example.com")
+                                  .privateAttributes("email")
+                                  .set("groups", LDValue.buildArray().add("Google").add("Microsoft").build())
+                                  .privateAttributes("groups")
+                                  .build();
+                      }
                   }
                   """
               )

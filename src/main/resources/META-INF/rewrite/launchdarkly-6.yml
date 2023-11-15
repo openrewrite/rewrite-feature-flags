@@ -22,6 +22,7 @@ description: This recipe will apply changes commonly needed when migrating to La
 recipeList:
   # https://docs.launchdarkly.com/sdk/server-side/java/migration-5-to-6
   - org.openrewrite.launchdarkly.UpgradeLaunchDarkly6Dependencies
+  - org.openrewrite.launchdarkly.MigrateUserToContext
 
 ---
 type: specs.openrewrite.org/v1beta/recipe
@@ -29,7 +30,7 @@ name: org.openrewrite.launchdarkly.UpgradeLaunchDarkly6Dependencies
 displayName: Migrate LaunchDarkly dependencies to 6.x
 description: Migrate LaunchDarkly dependencies to 6.x.
 recipeList:
-  - org.openrewrite.java.dependencies.ChangeDependency:
-      oldGroupId: com.launchdarkly
-      oldArtifactId: launchdarkly-java-server-sdk
+  - org.openrewrite.java.dependencies.UpgradeDependencyVersion:
+      groupId: com.launchdarkly
+      artifactId: launchdarkly-java-server-sdk
       newVersion: 6.x
