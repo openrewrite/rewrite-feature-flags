@@ -17,6 +17,7 @@ package org.openrewrite.launchdarkly.search;
 
 import org.junit.jupiter.api.Test;
 import org.openrewrite.DocumentExample;
+import org.openrewrite.InMemoryExecutionContext;
 import org.openrewrite.java.JavaParser;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
@@ -26,7 +27,7 @@ import static org.openrewrite.java.Assertions.java;
 class FindFeatureFlagTest implements RewriteTest {
     @Override
     public void defaults(RecipeSpec spec) {
-        spec.parser(JavaParser.fromJavaVersion().classpath("launchdarkly-java-server-sdk"));
+        spec.parser(JavaParser.fromJavaVersion().classpathFromResources(new InMemoryExecutionContext(), "launchdarkly-java-server-sdk-5"));
     }
 
     @Test
@@ -34,6 +35,7 @@ class FindFeatureFlagTest implements RewriteTest {
     void findFeatureFlag() {
         rewriteRun(
           spec -> spec.recipe(new FindFeatureFlag(null, null)),
+          //language=java
           java(
             """
               import com.launchdarkly.sdk.LDUser;
@@ -81,6 +83,7 @@ class FindFeatureFlagTest implements RewriteTest {
     void findFeatureFlagByType() {
         rewriteRun(
           spec -> spec.recipe(new FindFeatureFlag(FindFeatureFlag.FeatureFlagType.Bool, null)),
+          //language=java
           java(
             """
               import com.launchdarkly.sdk.LDUser;
@@ -140,6 +143,7 @@ class FindFeatureFlagTest implements RewriteTest {
     void findFeatureFlagByName() {
         rewriteRun(
           spec -> spec.recipe(new FindFeatureFlag(null, "flag-key-123abc")),
+          //language=java
           java(
             """
               import com.launchdarkly.sdk.LDUser;
@@ -199,6 +203,7 @@ class FindFeatureFlagTest implements RewriteTest {
     void findFeatureFlagByTypeAndName() {
         rewriteRun(
           spec -> spec.recipe(new FindFeatureFlag(FindFeatureFlag.FeatureFlagType.Bool, "flag-key-123abc")),
+          //language=java
           java(
             """
               import com.launchdarkly.sdk.LDUser;
@@ -258,6 +263,7 @@ class FindFeatureFlagTest implements RewriteTest {
     void findFlagByNameUsingVariable() {
         rewriteRun(
           spec -> spec.recipe(new FindFeatureFlag(null, "flag-key-123abc")),
+          //language=java
           java(
             """
               import com.launchdarkly.sdk.LDUser;
