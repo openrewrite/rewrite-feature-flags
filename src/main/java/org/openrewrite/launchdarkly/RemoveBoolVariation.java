@@ -27,6 +27,7 @@ import org.openrewrite.java.tree.JavaType;
 import org.openrewrite.java.tree.Space;
 import org.openrewrite.marker.Markers;
 import org.openrewrite.staticanalysis.RemoveUnusedLocalVariables;
+import org.openrewrite.staticanalysis.RemoveUnusedPrivateFields;
 import org.openrewrite.staticanalysis.SimplifyConstantIfBranchExecution;
 
 import java.util.UUID;
@@ -65,9 +66,9 @@ public class RemoveBoolVariation extends Recipe {
             public J visitMethodInvocation(J.MethodInvocation method, ExecutionContext executionContext) {
                 J.MethodInvocation mi = (J.MethodInvocation) super.visitMethodInvocation(method, executionContext);
                 if (methodMatcher.matches(mi) && J.Literal.isLiteralValue(mi.getArguments().get(0), featureKey)) {
-                    // TODO Apply recipes in a limited fashion rather than bluntly against all of the code
                     doAfterVisit(new SimplifyConstantIfBranchExecution().getVisitor());
                     doAfterVisit(new RemoveUnusedLocalVariables(null).getVisitor());
+                    doAfterVisit(new RemoveUnusedPrivateFields().getVisitor());
                     return new J.Literal(UUID.randomUUID(), Space.EMPTY, Markers.EMPTY, replacementValue, String.valueOf(replacementValue), null, JavaType.Primitive.Boolean);
                 }
                 return mi;

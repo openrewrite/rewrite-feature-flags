@@ -16,6 +16,7 @@
 package org.openrewrite.launchdarkly;
 
 import org.junit.jupiter.api.Test;
+import org.openrewrite.DocumentExample;
 import org.openrewrite.InMemoryExecutionContext;
 import org.openrewrite.java.JavaParser;
 import org.openrewrite.test.RecipeSpec;
@@ -33,6 +34,7 @@ class RemoveBoolVariationTest implements RewriteTest {
     }
 
     @Test
+    @DocumentExample
     void enablePermanently() {
         rewriteRun(
           // language=java
@@ -41,8 +43,9 @@ class RemoveBoolVariationTest implements RewriteTest {
               import com.launchdarkly.sdk.*;
               import com.launchdarkly.sdk.server.*;
               class Foo {
-                  LDClient client = new LDClient("sdk-key-123abc");
+                  private LDClient client = new LDClient("sdk-key-123abc");
                   void bar() {
+                      // Unused local variables are not yet cleaned up
                       LDContext context = LDContext.builder("context-key-123abc")
                         .name("Sandy")
                         .build();
@@ -61,8 +64,8 @@ class RemoveBoolVariationTest implements RewriteTest {
               import com.launchdarkly.sdk.*;
               import com.launchdarkly.sdk.server.*;
               class Foo {
-                  LDClient client = new LDClient("sdk-key-123abc");
                   void bar() {
+                      // Unused local variables are not yet cleaned up
                       LDContext context = LDContext.builder("context-key-123abc")
                         .name("Sandy")
                         .build();
@@ -84,7 +87,7 @@ class RemoveBoolVariationTest implements RewriteTest {
               import com.launchdarkly.sdk.*;
               import com.launchdarkly.sdk.server.*;
               class Foo {
-                  LDClient client = new LDClient("sdk-key-123abc");
+                  private LDClient client = new LDClient("sdk-key-123abc");
                   void bar() {
                       LDContext context = LDContext.builder("context-key-123abc")
                         .name("Sandy")
@@ -104,7 +107,6 @@ class RemoveBoolVariationTest implements RewriteTest {
               import com.launchdarkly.sdk.*;
               import com.launchdarkly.sdk.server.*;
               class Foo {
-                  LDClient client = new LDClient("sdk-key-123abc");
                   void bar() {
                       LDContext context = LDContext.builder("context-key-123abc")
                         .name("Sandy")
@@ -128,7 +130,7 @@ class RemoveBoolVariationTest implements RewriteTest {
               import com.launchdarkly.sdk.*;
               import com.launchdarkly.sdk.server.*;
               class Foo {
-                  LDClient client = new LDClient("sdk-key-123abc");
+                  private LDClient client = new LDClient("sdk-key-123abc");
                   void bar() {
                       LDContext context = LDContext.builder("context-key-123abc")
                         .name("Sandy")
@@ -148,7 +150,6 @@ class RemoveBoolVariationTest implements RewriteTest {
               import com.launchdarkly.sdk.*;
               import com.launchdarkly.sdk.server.*;
               class Foo {
-                  LDClient client = new LDClient("sdk-key-123abc");
                   void bar() {
                       LDContext context = LDContext.builder("context-key-123abc")
                         .name("Sandy")
@@ -162,8 +163,76 @@ class RemoveBoolVariationTest implements RewriteTest {
         );
     }
 
-    // TODO Add additional tests for other variations of the feature flag check
-    // - removal of unused LDContext
-    // - removal of unused LDClient
-    // - checks other than `client.boolVariation`
+    @Test
+    void enablePermanentlyWithParameters() {
+        rewriteRun(
+          // language=java
+          java(
+            """
+              import com.launchdarkly.sdk.*;
+              import com.launchdarkly.sdk.server.*;
+              class Foo {
+                  // Unused parameters are not yet cleaned up
+                  void bar(LDClient client, LDContext context) {
+                      if (client.boolVariation("flag-key-123abc", context, false)) {
+                          // Application code to show the feature
+                          System.out.println("Feature is on");
+                      }
+                  }
+              }
+              """,
+            """
+              import com.launchdarkly.sdk.*;
+              import com.launchdarkly.sdk.server.*;
+              class Foo {
+                  // Unused parameters are not yet cleaned up
+                  void bar(LDClient client, LDContext context) {
+                      // Application code to show the feature
+                      System.out.println("Feature is on");
+                  }
+              }
+              """
+          )
+        );
+    }
+
+    @Test
+    void simplifyOnlyAffectsSourceFileWithFeatureFlag() {
+        // language=java
+        rewriteRun(
+          java(
+            """
+              import com.launchdarkly.sdk.*;
+              import com.launchdarkly.sdk.server.*;
+              class Foo {
+                  void bar(LDClient client, LDContext context) {
+                      if (client.boolVariation("flag-key-123abc", context, false)) {
+                          // Application code to show the feature
+                          System.out.println("Feature is on");
+                      }
+                  }
+              }
+              """,
+            """
+              import com.launchdarkly.sdk.*;
+              import com.launchdarkly.sdk.server.*;
+              class Foo {
+                  void bar(LDClient client, LDContext context) {
+                      // Application code to show the feature
+                      System.out.println("Feature is on");
+                  }
+              }
+              """
+          ),
+          java("""
+            class Bar {
+                void bar() {
+                    if (true) {
+                        // conditional retained; simplify only applies to the file with the feature flag check
+                    }
+                }
+            }
+            """)
+        );
+    }
 }
