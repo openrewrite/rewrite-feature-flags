@@ -25,5 +25,11 @@ dependencies {
     testImplementation("org.openrewrite:rewrite-maven")
 
     testImplementation("org.junit.jupiter:junit-jupiter-engine:latest.release")
-    testImplementation("com.launchdarkly:launchdarkly-java-server-sdk:latest.release")
+    testRuntimeOnly("org.gradle:gradle-tooling-api:latest.release")
+}
+
+recipeDependencies {
+    parserClasspath("com.launchdarkly:launchdarkly-java-server-sdk:5.10.+")
+    parserClasspath("com.launchdarkly:launchdarkly-java-server-sdk:6.+")
+    //parserClasspath("com.launchdarkly:launchdarkly-java-server-sdk:7.+")
 }

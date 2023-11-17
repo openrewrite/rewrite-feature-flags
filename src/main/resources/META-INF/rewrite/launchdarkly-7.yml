@@ -16,13 +16,13 @@
 
 ---
 type: specs.openrewrite.org/v1beta/recipe
-name: org.openrewrite.launchdarkly.UpgradeLaunchDarkly6
-displayName: Migrate to LaunchDarkly 6.x
-description: This recipe will apply changes commonly needed when migrating to LaunchDarkly 6.x.
+name: org.openrewrite.launchdarkly.UpgradeLaunchDarkly7
+displayName: Migrate to LaunchDarkly 7.x
+description: This recipe will apply changes commonly needed when migrating to LaunchDarkly 7.x.
 recipeList:
-  # https://docs.launchdarkly.com/sdk/server-side/java/migration-5-to-6
+  - org.openrewrite.launchdarkly.UpgradeLaunchDarkly6
+  # https://docs.launchdarkly.com/sdk/server-side/java/migration-6-to-7
   - org.openrewrite.java.dependencies.UpgradeDependencyVersion:
       groupId: com.launchdarkly
       artifactId: launchdarkly-java-server-sdk
-      newVersion: 6.x
-  - org.openrewrite.launchdarkly.MigrateUserToContext
+      newVersion: 7.x
