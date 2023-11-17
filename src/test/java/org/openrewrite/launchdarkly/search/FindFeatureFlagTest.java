@@ -35,6 +35,7 @@ class FindFeatureFlagTest implements RewriteTest {
     void findFeatureFlag() {
         rewriteRun(
           spec -> spec.recipe(new FindFeatureFlag(null, null)),
+          //language=java
           java(
             """
               import com.launchdarkly.sdk.LDUser;
@@ -82,6 +83,7 @@ class FindFeatureFlagTest implements RewriteTest {
     void findFeatureFlagByType() {
         rewriteRun(
           spec -> spec.recipe(new FindFeatureFlag(FindFeatureFlag.FeatureFlagType.Bool, null)),
+          //language=java
           java(
             """
               import com.launchdarkly.sdk.LDUser;
@@ -141,6 +143,7 @@ class FindFeatureFlagTest implements RewriteTest {
     void findFeatureFlagByName() {
         rewriteRun(
           spec -> spec.recipe(new FindFeatureFlag(null, "flag-key-123abc")),
+          //language=java
           java(
             """
               import com.launchdarkly.sdk.LDUser;
@@ -200,6 +203,7 @@ class FindFeatureFlagTest implements RewriteTest {
     void findFeatureFlagByTypeAndName() {
         rewriteRun(
           spec -> spec.recipe(new FindFeatureFlag(FindFeatureFlag.FeatureFlagType.Bool, "flag-key-123abc")),
+          //language=java
           java(
             """
               import com.launchdarkly.sdk.LDUser;
@@ -259,6 +263,7 @@ class FindFeatureFlagTest implements RewriteTest {
     void findFlagByNameUsingVariable() {
         rewriteRun(
           spec -> spec.recipe(new FindFeatureFlag(null, "flag-key-123abc")),
+          //language=java
           java(
             """
               import com.launchdarkly.sdk.LDUser;
