@@ -21,12 +21,15 @@ import org.openrewrite.*;
 import org.openrewrite.internal.StringUtils;
 import org.openrewrite.java.*;
 import org.openrewrite.java.search.UsesType;
+import org.openrewrite.java.tree.Expression;
 import org.openrewrite.java.tree.J;
 import org.openrewrite.java.tree.JavaType;
 import org.openrewrite.java.tree.Space;
 import org.openrewrite.marker.Markers;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Objects.requireNonNull;
@@ -109,6 +112,8 @@ public class MigrateUserToContext extends Recipe {
                                             m.getArguments().get(0)
                                     );
                         } else if (BUILTIN_PRIVATE_ATTRIBUTE.matches(m) && PRIVATE_ATTRIBUTES.contains(m.getSimpleName())) {
+                            doAfterVisit(new UseVarargsForPrivateAttributes());
+
                             String code;
                             if (requireNonNull(m.getPadding().getSelect()).getAfter().getWhitespace().contains("\n")) {
                                 code = "#{any(com.launchdarkly.sdk.ContextBuilder)}\n.set(#{any(java.lang.String)}, #{any()})\n.privateAttributes(#{any(java.lang.String)})";
@@ -143,6 +148,8 @@ public class MigrateUserToContext extends Recipe {
                                     .build()
                                     .apply(getCursor(), m.getCoordinates().replace(), m.getSelect(), m.getArguments().get(0), m.getArguments().get(1));
                         } else if (PRIVATE_CUSTOM_ATTRIBUTES.matches(m)) {
+                            doAfterVisit(new UseVarargsForPrivateAttributes());
+
                             String code;
                             if (requireNonNull(m.getPadding().getSelect()).getAfter().getWhitespace().contains("\n")) {
                                 code = "#{any(com.launchdarkly.sdk.ContextBuilder)}\n.set(#{any(java.lang.String)}, #{any()})\n.privateAttributes(#{any(java.lang.String)})";
@@ -160,5 +167,84 @@ public class MigrateUserToContext extends Recipe {
                     }
                 }
         );
+    }
+
+    private static class UseVarargsForPrivateAttributes extends JavaIsoVisitor<ExecutionContext> {
+        private static final MethodMatcher CONTEXT_BUILDER_MATCHER = new MethodMatcher("com.launchdarkly.sdk.ContextBuilder *(..)");
+        private static final MethodMatcher PRIVATE_ATTRIBUTES_STRING_VARARGS_MATCHER = new MethodMatcher("com.launchdarkly.sdk.ContextBuilder privateAttributes(java.lang.String...)");
+        private static final MethodMatcher USER_BUILDER_BUILD_MATCHER = new MethodMatcher("com.launchdarkly.sdk.LDUser.Builder build()");
+        private static final MethodMatcher CONTEXT_BUILDER_BUILD_MATCHER = new MethodMatcher("com.launchdarkly.sdk.ContextBuilder build()");
+
+        @Override
+        public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {
+            J.MethodInvocation m = super.visitMethodInvocation(method, ctx);
+            if (!(USER_BUILDER_BUILD_MATCHER.matches(m) || CONTEXT_BUILDER_BUILD_MATCHER.matches(m))) {
+                return m;
+            }
+
+            List<J.MethodInvocation> chain = computeChain(m);
+            return unfold(m, chain);
+        }
+
+        private List<J.MethodInvocation> computeChain(J.MethodInvocation build) {
+            List<J.MethodInvocation> chain = new ArrayList<>();
+            if (!(build.getSelect() instanceof J.MethodInvocation)) {
+                return chain;
+            }
+
+            List<Expression> attributes = new ArrayList<>();
+            Expression select = build.getSelect();
+            int privateAttributesInvocations = 0;
+            int lastPrivateAttributesIdx = -1;
+            while (isApplicableMethod(select)) {
+                J.MethodInvocation m = (J.MethodInvocation) select;
+                if (PRIVATE_ATTRIBUTES_STRING_VARARGS_MATCHER.matches(m)) {
+                    if (lastPrivateAttributesIdx == -1 && CONTEXT_BUILDER_MATCHER.matches(m.getSelect())) {
+                        lastPrivateAttributesIdx = chain.size();
+                        chain.add(m);
+                    }
+                    attributes.addAll(0, m.getArguments());
+                    privateAttributesInvocations++;
+                } else {
+                    chain.add(m);
+                }
+                select = m.getSelect();
+            }
+            if (privateAttributesInvocations <= 1) {
+                return Collections.emptyList();
+            }
+            for (int i = 1; i < attributes.size(); i++) {
+                attributes.set(i, attributes.get(i).withPrefix(Space.SINGLE_SPACE));
+            }
+            chain.set(lastPrivateAttributesIdx, chain.get(lastPrivateAttributesIdx).withArguments(attributes));
+            return chain;
+        }
+
+        private boolean isApplicableMethod(Expression select) {
+            if (select == null) {
+                return false;
+            }
+
+            if (!(select instanceof J.MethodInvocation)) {
+                return false;
+            }
+
+            return CONTEXT_BUILDER_MATCHER.matches((J.MethodInvocation) select);
+        }
+
+        private J.MethodInvocation unfold(J.MethodInvocation build, List<J.MethodInvocation> chain) {
+            if (chain.isEmpty()) {
+                return build;
+            }
+            Collections.reverse(chain);
+
+            J.MethodInvocation select = chain.get(0);
+            for (int i = 1; i < chain.size(); i++) {
+                select = chain.get(i)
+                        .withId(Tree.randomId())
+                        .withSelect(select);
+            }
+            return build.withSelect(select);
+        }
     }
 }

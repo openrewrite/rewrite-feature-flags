@@ -233,9 +233,8 @@ class UpgradeLaunchDarkly6Test implements RewriteTest {
                           LDContext user = LDContext.builder("user-key-123abc")
                                   .name("Sandy")
                                   .set("email", "sandy@example.com")
-                                  .privateAttributes("email")
                                   .set("groups", LDValue.buildArray().add("Google").add("Microsoft").build())
-                                  .privateAttributes("groups")
+                                  .privateAttributes("email", "groups")
                                   .build();
                       }
                   }
