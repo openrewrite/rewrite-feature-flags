@@ -5,12 +5,6 @@ plugins {
 group = "org.openrewrite.recipe"
 description = "LaunchDarkly Migration"
 
-recipeDependencies {
-    parserClasspath("com.launchdarkly:launchdarkly-java-server-sdk:5.10.+")
-    parserClasspath("com.launchdarkly:launchdarkly-java-server-sdk:6.+")
-    parserClasspath("com.launchdarkly:launchdarkly-java-server-sdk:7.+")
-}
-
 val rewriteVersion = rewriteRecipe.rewriteVersion.get()
 dependencies {
     implementation(platform("org.openrewrite:rewrite-bom:$rewriteVersion"))
@@ -25,6 +19,7 @@ dependencies {
     testImplementation("org.openrewrite:rewrite-maven")
 
     testImplementation("org.junit.jupiter:junit-jupiter-engine:latest.release")
+
     testRuntimeOnly("org.gradle:gradle-tooling-api:latest.release")
 }
 
