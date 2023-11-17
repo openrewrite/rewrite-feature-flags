@@ -235,4 +235,41 @@ class RemoveBoolVariationTest implements RewriteTest {
             """)
         );
     }
+
+    @Test
+    void localVariablesNotInlined() {
+        // language=java
+        rewriteRun(
+          java(
+            """
+              import com.launchdarkly.sdk.*;
+              import com.launchdarkly.sdk.server.*;
+              class Foo {
+                  void bar(LDClient client, LDContext context) {
+                      // Local variables not yet inlined
+                      boolean flagEnabled = client.boolVariation("flag-key-123abc", context, false);
+                      if (flagEnabled) {
+                          // Application code to show the feature
+                          System.out.println("Feature is on");
+                      }
+                  }
+              }
+              """,
+            """
+              import com.launchdarkly.sdk.*;
+              import com.launchdarkly.sdk.server.*;
+              class Foo {
+                  void bar(LDClient client, LDContext context) {
+                      // Local variables not yet inlined
+                      boolean flagEnabled = true;
+                      if (flagEnabled) {
+                          // Application code to show the feature
+                          System.out.println("Feature is on");
+                      }
+                  }
+              }
+              """
+          )
+        );
+    }
 }
