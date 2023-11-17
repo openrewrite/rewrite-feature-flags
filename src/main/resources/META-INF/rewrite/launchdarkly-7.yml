@@ -22,14 +22,6 @@ description: This recipe will apply changes commonly needed when migrating to La
 recipeList:
   - org.openrewrite.launchdarkly.UpgradeLaunchDarkly6
   # https://docs.launchdarkly.com/sdk/server-side/java/migration-6-to-7
-  - org.openrewrite.launchdarkly.UpgradeLaunchDarkly7Dependencies
-
----
-type: specs.openrewrite.org/v1beta/recipe
-name: org.openrewrite.launchdarkly.UpgradeLaunchDarkly7Dependencies
-displayName: Migrate LaunchDarkly dependencies to 7.x
-description: Migrate LaunchDarkly dependencies to 7.x.
-recipeList:
   - org.openrewrite.java.dependencies.UpgradeDependencyVersion:
       groupId: com.launchdarkly
       artifactId: launchdarkly-java-server-sdk
