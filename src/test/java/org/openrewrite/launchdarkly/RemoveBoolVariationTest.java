@@ -40,15 +40,12 @@ class RemoveBoolVariationTest implements RewriteTest {
           // language=java
           java(
             """
-              import com.launchdarkly.sdk.*;
-              import com.launchdarkly.sdk.server.*;
+              import com.launchdarkly.sdk.LDContext;
+              import com.launchdarkly.sdk.server.LDClient;
               class Foo {
                   private LDClient client = new LDClient("sdk-key-123abc");
                   void bar() {
-                      // Unused local variables are not yet cleaned up
-                      LDContext context = LDContext.builder("context-key-123abc")
-                        .name("Sandy")
-                        .build();
+                      LDContext context = null;
                       if (client.boolVariation("flag-key-123abc", context, false)) {
                           // Application code to show the feature
                           System.out.println("Feature is on");
@@ -61,14 +58,8 @@ class RemoveBoolVariationTest implements RewriteTest {
               }
               """,
             """
-              import com.launchdarkly.sdk.*;
-              import com.launchdarkly.sdk.server.*;
               class Foo {
                   void bar() {
-                      // Unused local variables are not yet cleaned up
-                      LDContext context = LDContext.builder("context-key-123abc")
-                        .name("Sandy")
-                        .build();
                       // Application code to show the feature
                       System.out.println("Feature is on");
                   }
@@ -84,14 +75,12 @@ class RemoveBoolVariationTest implements RewriteTest {
           // language=java
           java(
             """
-              import com.launchdarkly.sdk.*;
-              import com.launchdarkly.sdk.server.*;
+              import com.launchdarkly.sdk.LDContext;
+              import com.launchdarkly.sdk.server.LDClient;
               class Foo {
                   private LDClient client = new LDClient("sdk-key-123abc");
                   void bar() {
-                      LDContext context = LDContext.builder("context-key-123abc")
-                        .name("Sandy")
-                        .build();
+                      LDContext context = null;
                       if (!client.boolVariation("flag-key-123abc", context, false)) {
                         // The code to run if the feature is off
                           System.out.println("Feature is off");
@@ -104,13 +93,8 @@ class RemoveBoolVariationTest implements RewriteTest {
               }
               """,
             """
-              import com.launchdarkly.sdk.*;
-              import com.launchdarkly.sdk.server.*;
               class Foo {
                   void bar() {
-                      LDContext context = LDContext.builder("context-key-123abc")
-                        .name("Sandy")
-                        .build();
                       // Application code to show the feature
                       System.out.println("Feature is on");
                   }
@@ -127,14 +111,12 @@ class RemoveBoolVariationTest implements RewriteTest {
           // language=java
           java(
             """
-              import com.launchdarkly.sdk.*;
-              import com.launchdarkly.sdk.server.*;
+              import com.launchdarkly.sdk.LDContext;
+              import com.launchdarkly.sdk.server.LDClient;
               class Foo {
                   private LDClient client = new LDClient("sdk-key-123abc");
                   void bar() {
-                      LDContext context = LDContext.builder("context-key-123abc")
-                        .name("Sandy")
-                        .build();
+                      LDContext context = null;
                       if (client.boolVariation("flag-key-123abc", context, false)) {
                           // Application code to show the feature
                           System.out.println("Feature is on");
@@ -147,13 +129,8 @@ class RemoveBoolVariationTest implements RewriteTest {
               }
               """,
             """
-              import com.launchdarkly.sdk.*;
-              import com.launchdarkly.sdk.server.*;
               class Foo {
                   void bar() {
-                      LDContext context = LDContext.builder("context-key-123abc")
-                        .name("Sandy")
-                        .build();
                       // The code to run if the feature is off
                       System.out.println("Feature is off");
                   }
@@ -169,8 +146,8 @@ class RemoveBoolVariationTest implements RewriteTest {
           // language=java
           java(
             """
-              import com.launchdarkly.sdk.*;
-              import com.launchdarkly.sdk.server.*;
+              import com.launchdarkly.sdk.LDContext;
+              import com.launchdarkly.sdk.server.LDClient;
               class Foo {
                   // Unused parameters are not yet cleaned up
                   void bar(LDClient client, LDContext context) {
@@ -182,8 +159,8 @@ class RemoveBoolVariationTest implements RewriteTest {
               }
               """,
             """
-              import com.launchdarkly.sdk.*;
-              import com.launchdarkly.sdk.server.*;
+              import com.launchdarkly.sdk.LDContext;
+              import com.launchdarkly.sdk.server.LDClient;
               class Foo {
                   // Unused parameters are not yet cleaned up
                   void bar(LDClient client, LDContext context) {
@@ -202,10 +179,12 @@ class RemoveBoolVariationTest implements RewriteTest {
         rewriteRun(
           java(
             """
-              import com.launchdarkly.sdk.*;
-              import com.launchdarkly.sdk.server.*;
+              import com.launchdarkly.sdk.LDContext;
+              import com.launchdarkly.sdk.server.LDClient;
               class Foo {
-                  void bar(LDClient client, LDContext context) {
+                  private LDClient client = new LDClient("sdk-key-123abc");
+                  void foo() {
+                      LDContext context = null;
                       if (client.boolVariation("flag-key-123abc", context, false)) {
                           // Application code to show the feature
                           System.out.println("Feature is on");
@@ -214,10 +193,8 @@ class RemoveBoolVariationTest implements RewriteTest {
               }
               """,
             """
-              import com.launchdarkly.sdk.*;
-              import com.launchdarkly.sdk.server.*;
               class Foo {
-                  void bar(LDClient client, LDContext context) {
+                  void foo() {
                       // Application code to show the feature
                       System.out.println("Feature is on");
                   }
@@ -242,10 +219,12 @@ class RemoveBoolVariationTest implements RewriteTest {
         rewriteRun(
           java(
             """
-              import com.launchdarkly.sdk.*;
-              import com.launchdarkly.sdk.server.*;
+              import com.launchdarkly.sdk.LDContext;
+              import com.launchdarkly.sdk.server.LDClient;
               class Foo {
-                  void bar(LDClient client, LDContext context) {
+                  private LDClient client = new LDClient("sdk-key-123abc");
+                  void bar() {
+                      LDContext context = null;
                       // Local variables not yet inlined
                       boolean flagEnabled = client.boolVariation("flag-key-123abc", context, false);
                       if (flagEnabled) {
@@ -256,10 +235,8 @@ class RemoveBoolVariationTest implements RewriteTest {
               }
               """,
             """
-              import com.launchdarkly.sdk.*;
-              import com.launchdarkly.sdk.server.*;
               class Foo {
-                  void bar(LDClient client, LDContext context) {
+                  void bar() {
                       // Local variables not yet inlined
                       boolean flagEnabled = true;
                       if (flagEnabled) {
