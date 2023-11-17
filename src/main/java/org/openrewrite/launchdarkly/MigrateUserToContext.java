@@ -54,7 +54,7 @@ public class MigrateUserToContext extends Recipe {
 
     @Override
     public String getDescription() {
-        return "Migrate `LDUser` to `LDContext`.";
+        return "Migrate from `LDUser` and `LDUser.Builder` to `LDContext` and `ContextBuilder`.";
     }
 
     @Override
@@ -196,7 +196,7 @@ public class MigrateUserToContext extends Recipe {
             Expression select = build.getSelect();
             int privateAttributesInvocations = 0;
             int lastPrivateAttributesIdx = -1;
-            while (isApplicableMethod(select)) {
+            while (CONTEXT_BUILDER_MATCHER.matches(select)) {
                 J.MethodInvocation m = (J.MethodInvocation) select;
                 if (PRIVATE_ATTRIBUTES_STRING_VARARGS_MATCHER.matches(m)) {
                     if (lastPrivateAttributesIdx == -1 && CONTEXT_BUILDER_MATCHER.matches(m.getSelect())) {
@@ -218,18 +218,6 @@ public class MigrateUserToContext extends Recipe {
             }
             chain.set(lastPrivateAttributesIdx, chain.get(lastPrivateAttributesIdx).withArguments(attributes));
             return chain;
-        }
-
-        private boolean isApplicableMethod(Expression select) {
-            if (select == null) {
-                return false;
-            }
-
-            if (!(select instanceof J.MethodInvocation)) {
-                return false;
-            }
-
-            return CONTEXT_BUILDER_MATCHER.matches((J.MethodInvocation) select);
         }
 
         private J.MethodInvocation unfold(J.MethodInvocation build, List<J.MethodInvocation> chain) {
