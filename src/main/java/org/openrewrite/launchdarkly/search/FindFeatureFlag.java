@@ -43,13 +43,15 @@ public class FindFeatureFlag extends Recipe {
     @Option(displayName = "Flag Type",
             description = "The feature flag's type.",
             example = "Bool",
-            valid = {"Bool", "Double", "Int", "JsonValue", "String"})
+            valid = {"Bool", "Double", "Int", "JsonValue", "String"},
+            required = false)
     @Nullable
     FeatureFlagType flagType;
 
     @Option(displayName = "Feature Key",
             description = "The unique key for the feature flag.",
-            example = "flag-key-123abc")
+            example = "flag-key-123abc",
+            required = false)
     @Nullable
     String featureKey;
 
