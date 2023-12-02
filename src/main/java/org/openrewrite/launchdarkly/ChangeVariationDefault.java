@@ -70,13 +70,16 @@ public class ChangeVariationDefault extends Recipe {
                 if (BOOL_VARIATION_MATCHER.matches(mi) && J.Literal.isLiteralValue(mi.getArguments().get(0), featureKey)) {
                     J.Literal literal = new J.Literal(UUID.randomUUID(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, defaultValue, null, JavaType.Primitive.Boolean);
                     return mi.withArguments(ListUtils.mapLast(mi.getArguments(), a -> literal));
-                } else if (STRING_VARIATION_MATCHER.matches(mi) && J.Literal.isLiteralValue(mi.getArguments().get(0), featureKey)) {
+                }
+                if (STRING_VARIATION_MATCHER.matches(mi) && J.Literal.isLiteralValue(mi.getArguments().get(0), featureKey)) {
                     J.Literal literal = new J.Literal(UUID.randomUUID(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, "\"" + defaultValue + "\"", null, JavaType.Primitive.String);
                     return mi.withArguments(ListUtils.mapLast(mi.getArguments(), a -> literal));
-                } else if (INT_VARIATION_MATCHER.matches(mi) && J.Literal.isLiteralValue(mi.getArguments().get(0), featureKey)) {
+                }
+                if (INT_VARIATION_MATCHER.matches(mi) && J.Literal.isLiteralValue(mi.getArguments().get(0), featureKey)) {
                     J.Literal literal = new J.Literal(UUID.randomUUID(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, defaultValue, null, JavaType.Primitive.Int);
                     return mi.withArguments(ListUtils.mapLast(mi.getArguments(), a -> literal));
-                } else if (DOUBLE_VARIATION_MATCHER.matches(mi) && J.Literal.isLiteralValue(mi.getArguments().get(0), featureKey)) {
+                }
+                if (DOUBLE_VARIATION_MATCHER.matches(mi) && J.Literal.isLiteralValue(mi.getArguments().get(0), featureKey)) {
                     J.Literal literal = new J.Literal(UUID.randomUUID(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, defaultValue, null, JavaType.Primitive.Double);
                     return mi.withArguments(ListUtils.mapLast(mi.getArguments(), a -> literal));
                 }
