@@ -35,7 +35,7 @@ import java.util.UUID;
 public class ChangeVariationDefault extends Recipe {
     @Override
     public String getDisplayName() {
-        return "Change the default for feature key";
+        return "Change the default value for feature key";
     }
 
     @Override

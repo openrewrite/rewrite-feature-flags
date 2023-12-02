@@ -146,7 +146,7 @@ class ChangeVariationDefaultTest implements RewriteTest {
     class DoubleVariation {
         @Test
         @DocumentExample
-        void changeDefaultValueToTrue() {
+        void changeDefaultValueTo456() {
             rewriteRun(
               spec -> spec.recipe(new ChangeVariationDefault("flag-key-123abc", "4.56")),
               // language=java
@@ -184,7 +184,7 @@ class ChangeVariationDefaultTest implements RewriteTest {
     class IntVariation {
         @Test
         @DocumentExample
-        void changeDefaultValueToTrue() {
+        void changeDefaultValueTo456() {
             rewriteRun(
               spec -> spec.recipe(new ChangeVariationDefault("flag-key-123abc", "456")),
               // language=java
