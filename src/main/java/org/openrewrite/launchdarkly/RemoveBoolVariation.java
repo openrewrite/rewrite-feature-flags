@@ -30,8 +30,6 @@ import org.openrewrite.staticanalysis.RemoveUnusedLocalVariables;
 import org.openrewrite.staticanalysis.RemoveUnusedPrivateFields;
 import org.openrewrite.staticanalysis.SimplifyConstantIfBranchExecution;
 
-import java.util.UUID;
-
 @Value
 @EqualsAndHashCode(callSuper = false)
 public class RemoveBoolVariation extends Recipe {
@@ -69,7 +67,7 @@ public class RemoveBoolVariation extends Recipe {
                     doAfterVisit(new SimplifyConstantIfBranchExecution().getVisitor());
                     doAfterVisit(new RemoveUnusedLocalVariables(null).getVisitor());
                     doAfterVisit(new RemoveUnusedPrivateFields().getVisitor());
-                    return new J.Literal(UUID.randomUUID(), Space.SINGLE_SPACE, Markers.EMPTY, replacementValue, String.valueOf(replacementValue), null, JavaType.Primitive.Boolean);
+                    return new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, replacementValue, String.valueOf(replacementValue), null, JavaType.Primitive.Boolean);
                 }
                 return mi;
             }
