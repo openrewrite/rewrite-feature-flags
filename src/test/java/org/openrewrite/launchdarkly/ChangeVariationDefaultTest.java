@@ -103,6 +103,45 @@ class ChangeVariationDefaultTest implements RewriteTest {
               )
             );
         }
+
+        @Test
+        void changeDefaultValueToTrueEvenIfVariableWithComment() {
+            rewriteRun(
+              // language=java
+              java(
+                """
+                  import com.launchdarkly.sdk.LDContext;
+                  import com.launchdarkly.sdk.server.LDClient;
+                  class Foo {
+                      private LDClient client = new LDClient("sdk-key-123abc");
+                      void bar(LDContext context) {
+                          boolean defaultValue = false; // Not cleaned up
+                          if (client.boolVariation("flag-key-123abc", context,
+                              /* Retained */
+                              defaultValue)) {
+                              System.out.println("Feature is on");
+                          }
+                      }
+                  }
+                  """,
+                """
+                  import com.launchdarkly.sdk.LDContext;
+                  import com.launchdarkly.sdk.server.LDClient;
+                  class Foo {
+                      private LDClient client = new LDClient("sdk-key-123abc");
+                      void bar(LDContext context) {
+                          boolean defaultValue = false; // Not cleaned up
+                          if (client.boolVariation("flag-key-123abc", context,
+                              /* Retained */
+                              true)) {
+                              System.out.println("Feature is on");
+                          }
+                      }
+                  }
+                  """
+              )
+            );
+        }
     }
 
     @Nested

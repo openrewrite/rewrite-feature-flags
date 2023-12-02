@@ -28,8 +28,6 @@ import org.openrewrite.java.tree.JavaType;
 import org.openrewrite.java.tree.Space;
 import org.openrewrite.marker.Markers;
 
-import java.util.UUID;
-
 @Value
 @EqualsAndHashCode(callSuper = false)
 public class ChangeVariationDefault extends Recipe {
@@ -68,20 +66,20 @@ public class ChangeVariationDefault extends Recipe {
             public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext executionContext) {
                 J.MethodInvocation mi = super.visitMethodInvocation(method, executionContext);
                 if (BOOL_VARIATION_MATCHER.matches(mi) && J.Literal.isLiteralValue(mi.getArguments().get(0), featureKey)) {
-                    J.Literal literal = new J.Literal(UUID.randomUUID(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, defaultValue, null, JavaType.Primitive.Boolean);
-                    return mi.withArguments(ListUtils.mapLast(mi.getArguments(), a -> literal));
+                    J.Literal literal = new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, defaultValue, null, JavaType.Primitive.Boolean);
+                    return mi.withArguments(ListUtils.mapLast(mi.getArguments(), a -> literal.withPrefix(a.getPrefix())));
                 }
                 if (STRING_VARIATION_MATCHER.matches(mi) && J.Literal.isLiteralValue(mi.getArguments().get(0), featureKey)) {
-                    J.Literal literal = new J.Literal(UUID.randomUUID(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, "\"" + defaultValue + "\"", null, JavaType.Primitive.String);
-                    return mi.withArguments(ListUtils.mapLast(mi.getArguments(), a -> literal));
+                    J.Literal literal = new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, "\"" + defaultValue + "\"", null, JavaType.Primitive.String);
+                    return mi.withArguments(ListUtils.mapLast(mi.getArguments(), a -> literal.withPrefix(a.getPrefix())));
                 }
                 if (INT_VARIATION_MATCHER.matches(mi) && J.Literal.isLiteralValue(mi.getArguments().get(0), featureKey)) {
-                    J.Literal literal = new J.Literal(UUID.randomUUID(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, defaultValue, null, JavaType.Primitive.Int);
-                    return mi.withArguments(ListUtils.mapLast(mi.getArguments(), a -> literal));
+                    J.Literal literal = new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, defaultValue, null, JavaType.Primitive.Int);
+                    return mi.withArguments(ListUtils.mapLast(mi.getArguments(), a -> literal.withPrefix(a.getPrefix())));
                 }
                 if (DOUBLE_VARIATION_MATCHER.matches(mi) && J.Literal.isLiteralValue(mi.getArguments().get(0), featureKey)) {
-                    J.Literal literal = new J.Literal(UUID.randomUUID(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, defaultValue, null, JavaType.Primitive.Double);
-                    return mi.withArguments(ListUtils.mapLast(mi.getArguments(), a -> literal));
+                    J.Literal literal = new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, defaultValue, null, JavaType.Primitive.Double);
+                    return mi.withArguments(ListUtils.mapLast(mi.getArguments(), a -> literal.withPrefix(a.getPrefix())));
                 }
                 return mi;
             }
