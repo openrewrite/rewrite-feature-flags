@@ -43,7 +43,7 @@ public class FindFeatureFlag extends Recipe {
     @Option(displayName = "Flag Type",
             description = "The feature flag's type.",
             example = "Bool",
-            valid = {"Bool", "Double", "Int", "JsonValue", "String"},
+            valid = {"Bool", "Double", "Int", "JsonValue", "Migration", "String"},
             required = false)
     @Nullable
     FeatureFlagType flagType;
@@ -154,9 +154,10 @@ public class FindFeatureFlag extends Recipe {
         Double("doubleVariation"),
         Int("intVariation"),
         JsonValue("jsonValueVariation"),
+        Migration("migrationVariation"),
         String("stringVariation");
 
-        String methodName;
+        private final String methodName;
 
         FeatureFlagType(String methodName) {
             this.methodName = methodName;
