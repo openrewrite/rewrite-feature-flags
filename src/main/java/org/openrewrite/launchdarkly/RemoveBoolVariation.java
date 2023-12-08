@@ -61,8 +61,8 @@ public class RemoveBoolVariation extends Recipe {
     public TreeVisitor<?, ExecutionContext> getVisitor() {
         JavaVisitor<ExecutionContext> visitor = new JavaVisitor<ExecutionContext>() {
             @Override
-            public J visitMethodInvocation(J.MethodInvocation method, ExecutionContext executionContext) {
-                J.MethodInvocation mi = (J.MethodInvocation) super.visitMethodInvocation(method, executionContext);
+            public J visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {
+                J.MethodInvocation mi = (J.MethodInvocation) super.visitMethodInvocation(method, ctx);
                 if (methodMatcher.matches(mi) && J.Literal.isLiteralValue(mi.getArguments().get(0), featureKey)) {
                     doAfterVisit(new SimplifyConstantIfBranchExecution().getVisitor());
                     doAfterVisit(new RemoveUnusedLocalVariables(null).getVisitor());

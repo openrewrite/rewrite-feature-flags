@@ -63,8 +63,8 @@ public class ChangeVariationDefault extends Recipe {
     public TreeVisitor<?, ExecutionContext> getVisitor() {
         JavaIsoVisitor<ExecutionContext> visitor = new JavaIsoVisitor<ExecutionContext>() {
             @Override
-            public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext executionContext) {
-                J.MethodInvocation mi = super.visitMethodInvocation(method, executionContext);
+            public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {
+                J.MethodInvocation mi = super.visitMethodInvocation(method, ctx);
                 if (BOOL_VARIATION_MATCHER.matches(mi) && J.Literal.isLiteralValue(mi.getArguments().get(0), featureKey)) {
                     J.Literal literal = new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, defaultValue, null, JavaType.Primitive.Boolean);
                     return mi.withArguments(ListUtils.mapLast(mi.getArguments(), a -> literal.withPrefix(a.getPrefix())));

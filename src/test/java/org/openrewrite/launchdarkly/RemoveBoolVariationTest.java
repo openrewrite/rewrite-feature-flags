@@ -201,7 +201,8 @@ class RemoveBoolVariationTest implements RewriteTest {
               }
               """
           ),
-          java("""
+          java(
+          """
             class Bar {
                 void bar() {
                     if (true) {
