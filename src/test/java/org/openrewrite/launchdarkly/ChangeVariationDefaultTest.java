@@ -70,6 +70,27 @@ class ChangeVariationDefaultTest implements RewriteTest {
         }
 
         @Test
+        void noChangeForMatchingValue() {
+            rewriteRun(
+              // language=java
+              java(
+                """
+                  import com.launchdarkly.sdk.LDContext;
+                  import com.launchdarkly.sdk.server.LDClient;
+                  class Foo {
+                      private LDClient client = new LDClient("sdk-key-123abc");
+                      void bar(LDContext context) {
+                          if (client.boolVariation("flag-key-123abc", context, true)) {
+                              System.out.println("Feature is on");
+                          }
+                      }
+                  }
+                  """
+              )
+            );
+        }
+
+        @Test
         void changeDefaultValueToTrueEvenIfVariable() {
             rewriteRun(
               // language=java
@@ -164,6 +185,27 @@ class ChangeVariationDefaultTest implements RewriteTest {
                       }
                   }
                   """,
+                """
+                  import com.launchdarkly.sdk.LDContext;
+                  import com.launchdarkly.sdk.server.LDClient;
+                  class Foo {
+                      private LDClient client = new LDClient("sdk-key-123abc");
+                      void bar(LDContext context) {
+                          if (client.stringVariation("flag-key-123abc", context, "true")) {
+                              System.out.println("Feature is on");
+                          }
+                      }
+                  }
+                  """
+              )
+            );
+        }
+
+        @Test
+        void noChangeForMatchingValue() {
+            rewriteRun(
+              // language=java
+              java(
                 """
                   import com.launchdarkly.sdk.LDContext;
                   import com.launchdarkly.sdk.server.LDClient;

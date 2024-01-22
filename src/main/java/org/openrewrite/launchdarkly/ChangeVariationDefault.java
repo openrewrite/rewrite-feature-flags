@@ -23,6 +23,7 @@ import org.openrewrite.internal.lang.NonNull;
 import org.openrewrite.java.JavaIsoVisitor;
 import org.openrewrite.java.MethodMatcher;
 import org.openrewrite.java.search.UsesMethod;
+import org.openrewrite.java.tree.Expression;
 import org.openrewrite.java.tree.J;
 import org.openrewrite.java.tree.JavaType;
 import org.openrewrite.java.tree.Space;
@@ -65,23 +66,28 @@ public class ChangeVariationDefault extends Recipe {
             @Override
             public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {
                 J.MethodInvocation mi = super.visitMethodInvocation(method, ctx);
-                if (BOOL_VARIATION_MATCHER.matches(mi) && J.Literal.isLiteralValue(mi.getArguments().get(0), featureKey)) {
-                    J.Literal literal = new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, defaultValue, null, JavaType.Primitive.Boolean);
-                    return mi.withArguments(ListUtils.mapLast(mi.getArguments(), a -> literal.withPrefix(a.getPrefix())));
+                Expression firstArgument = mi.getArguments().get(0);
+                Expression lastArgument = mi.getArguments().get(mi.getArguments().size() - 1);
+                if (BOOL_VARIATION_MATCHER.matches(mi) && J.Literal.isLiteralValue(firstArgument, featureKey)) {
+                    return changeValue(mi, lastArgument, new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, defaultValue, null, JavaType.Primitive.Boolean));
                 }
-                if (STRING_VARIATION_MATCHER.matches(mi) && J.Literal.isLiteralValue(mi.getArguments().get(0), featureKey)) {
-                    J.Literal literal = new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, "\"" + defaultValue + "\"", null, JavaType.Primitive.String);
-                    return mi.withArguments(ListUtils.mapLast(mi.getArguments(), a -> literal.withPrefix(a.getPrefix())));
+                if (STRING_VARIATION_MATCHER.matches(mi) && J.Literal.isLiteralValue(firstArgument, featureKey)) {
+                    return changeValue(mi, lastArgument, new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, "\"" + defaultValue + "\"", null, JavaType.Primitive.String));
                 }
-                if (INT_VARIATION_MATCHER.matches(mi) && J.Literal.isLiteralValue(mi.getArguments().get(0), featureKey)) {
-                    J.Literal literal = new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, defaultValue, null, JavaType.Primitive.Int);
-                    return mi.withArguments(ListUtils.mapLast(mi.getArguments(), a -> literal.withPrefix(a.getPrefix())));
+                if (INT_VARIATION_MATCHER.matches(mi) && J.Literal.isLiteralValue(firstArgument, featureKey)) {
+                    return changeValue(mi, lastArgument, new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, defaultValue, null, JavaType.Primitive.Int));
                 }
-                if (DOUBLE_VARIATION_MATCHER.matches(mi) && J.Literal.isLiteralValue(mi.getArguments().get(0), featureKey)) {
-                    J.Literal literal = new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, defaultValue, null, JavaType.Primitive.Double);
-                    return mi.withArguments(ListUtils.mapLast(mi.getArguments(), a -> literal.withPrefix(a.getPrefix())));
+                if (DOUBLE_VARIATION_MATCHER.matches(mi) && J.Literal.isLiteralValue(firstArgument, featureKey)) {
+                    return changeValue(mi, lastArgument, new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, defaultValue, null, JavaType.Primitive.Double));
                 }
                 return mi;
+            }
+
+            private J.MethodInvocation changeValue(J.MethodInvocation mi, Expression existingValue, J.Literal newValue) {
+                if (existingValue instanceof J.Literal && newValue.getValueSource().equals(((J.Literal) existingValue).getValueSource())) {
+                    return mi; // No change needed
+                }
+                return mi.withArguments(ListUtils.mapLast(mi.getArguments(), a -> newValue.withPrefix(a.getPrefix())));
             }
         };
         return Preconditions.check(
