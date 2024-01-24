@@ -18,7 +18,8 @@ package org.openrewrite.launchdarkly;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.openrewrite.*;
-import org.openrewrite.internal.lang.NonNull;
+import org.openrewrite.internal.StringUtils;
+import org.openrewrite.internal.lang.Nullable;
 import org.openrewrite.java.JavaVisitor;
 import org.openrewrite.java.MethodMatcher;
 import org.openrewrite.java.search.UsesMethod;
@@ -30,9 +31,14 @@ import org.openrewrite.staticanalysis.RemoveUnusedLocalVariables;
 import org.openrewrite.staticanalysis.RemoveUnusedPrivateFields;
 import org.openrewrite.staticanalysis.SimplifyConstantIfBranchExecution;
 
+import java.util.Optional;
+
 @Value
 @EqualsAndHashCode(callSuper = false)
 public class RemoveBoolVariation extends Recipe {
+
+    private static final String METHOD_PATTERN_BOOLVARIATION = "com.launchdarkly.sdk.server.LDClient boolVariation(String, com.launchdarkly.sdk.*, boolean)";
+
     @Override
     public String getDisplayName() {
         return "Remove `boolVariation` for feature key";
@@ -46,19 +52,25 @@ public class RemoveBoolVariation extends Recipe {
     @Option(displayName = "Feature flag key",
             description = "The key of the feature flag to remove.",
             example = "flag-key-123abc")
-    @NonNull
     String featureKey;
 
     @Option(displayName = "Replacement value",
             description = "The value to replace the feature flag check with.",
             example = "true")
-    @NonNull
     Boolean replacementValue;
 
-    private static final MethodMatcher methodMatcher = new MethodMatcher("com.launchdarkly.sdk.server.LDClient boolVariation(String, com.launchdarkly.sdk.*, boolean)", true);
+    @Option(displayName = "Method pattern",
+            description = "A method pattern to match against. If not specified, will match `LDClient` `boolVariation`. " +
+                          "The first argument must be the feature key as `String`.",
+            example = METHOD_PATTERN_BOOLVARIATION,
+            required = false)
+    @Nullable
+    String methodPattern;
 
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
+        String pattern = Optional.ofNullable(methodPattern).filter(StringUtils::isNotEmpty).orElse(METHOD_PATTERN_BOOLVARIATION);
+        final MethodMatcher methodMatcher = new MethodMatcher(pattern, true);
         JavaVisitor<ExecutionContext> visitor = new JavaVisitor<ExecutionContext>() {
             @Override
             public J visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {

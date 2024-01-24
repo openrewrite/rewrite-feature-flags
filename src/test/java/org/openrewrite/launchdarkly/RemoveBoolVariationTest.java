@@ -28,7 +28,7 @@ class RemoveBoolVariationTest implements RewriteTest {
 
     @Override
     public void defaults(RecipeSpec spec) {
-        spec.recipe(new RemoveBoolVariation("flag-key-123abc", true))
+        spec.recipe(new RemoveBoolVariation("flag-key-123abc", true, null))
           .parser(JavaParser.fromJavaVersion()
             .classpathFromResources(new InMemoryExecutionContext(), "launchdarkly-java-server-sdk-6"));
     }
@@ -107,7 +107,7 @@ class RemoveBoolVariationTest implements RewriteTest {
     @Test
     void disablePermanently() {
         rewriteRun(
-          spec -> spec.recipe(new RemoveBoolVariation("flag-key-123abc", false)),
+          spec -> spec.recipe(new RemoveBoolVariation("flag-key-123abc", false, null)),
           // language=java
           java(
             """
@@ -244,6 +244,57 @@ class RemoveBoolVariationTest implements RewriteTest {
                           // Application code to show the feature
                           System.out.println("Feature is on");
                       }
+                  }
+              }
+              """
+          )
+        );
+    }
+
+    @Test
+    void customMethodPatternForWrapper() {
+        rewriteRun(
+          spec -> spec.recipe(new RemoveBoolVariation("flag-key-123abc", true, "com.acme.bank.CustomLaunchDarklyWrapper featureFlagEnabled(String, boolean)")),
+          // language=java
+          java(
+            """
+              package com.acme.bank;
+              
+              import com.launchdarkly.sdk.LDContext;
+              import com.launchdarkly.sdk.server.LDClient;
+              
+              public class CustomLaunchDarklyWrapper {
+                  private LDClient client = new LDClient("sdk-key-123abc");
+                  public boolean featureFlagEnabled(String key, boolean fallback) {
+                      LDContext context = null;
+                      return client.boolVariation(key, context, false);
+                  }
+              }
+              """
+          ),
+          // language=java
+          java(
+            """
+              import com.acme.bank.CustomLaunchDarklyWrapper;
+              class Foo {
+                  private CustomLaunchDarklyWrapper wrapper = new CustomLaunchDarklyWrapper();
+                  void bar() {
+                      if (wrapper.featureFlagEnabled("flag-key-123abc", false)) {
+                          // Application code to show the feature
+                          System.out.println("Feature is on");
+                      }
+                      else {
+                        // The code to run if the feature is off
+                          System.out.println("Feature is off");
+                      }
+                  }
+              }
+              """,
+            """
+              class Foo {
+                  void bar() {
+                      // Application code to show the feature
+                      System.out.println("Feature is on");
                   }
               }
               """
