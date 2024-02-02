@@ -35,7 +35,7 @@ import java.util.List;
 import static java.util.Objects.requireNonNull;
 
 @Value
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 public class MigrateUserToContext extends Recipe {
     private static final MethodMatcher NEW_USER = new MethodMatcher("com.launchdarkly.sdk.LDUser <constructor>(java.lang.String)");
     private static final MethodMatcher NEW_USER_BUILDER = new MethodMatcher("com.launchdarkly.sdk.LDUser.Builder <constructor>(java.lang.String)");
