@@ -22,13 +22,11 @@ import org.openrewrite.Option;
 import org.openrewrite.Recipe;
 import org.openrewrite.TreeVisitor;
 import org.openrewrite.analysis.InvocationMatcher;
+import org.openrewrite.analysis.constantfold.ConstantFold;
 import org.openrewrite.analysis.dataflow.DataFlowNode;
 import org.openrewrite.analysis.dataflow.DataFlowSpec;
 import org.openrewrite.analysis.dataflow.Dataflow;
-import org.openrewrite.analysis.trait.expr.Expr;
 import org.openrewrite.analysis.trait.expr.Literal;
-import org.openrewrite.analysis.trait.expr.VarAccess;
-import org.openrewrite.analysis.trait.variable.Variable;
 import org.openrewrite.internal.StringUtils;
 import org.openrewrite.internal.lang.Nullable;
 import org.openrewrite.java.JavaIsoVisitor;
@@ -111,25 +109,9 @@ public class FindFeatureFlag extends Recipe {
                         .findSinks(new DataFlowSpec() {
                             @Override
                             public boolean isSource(DataFlowNode srcNode) {
-                                return srcNode.asExpr(VarAccess.class)
-                                        .map(VarAccess::getVariable)
-                                        .map(Variable::getAssignedValues)
-                                        .bind(assignedVariables -> {
-                                            if (assignedVariables.size() > 1) {
-                                                return fj.data.Option.none();
-                                            }
-                                            for (Expr e : assignedVariables) {
-                                                if (e instanceof Literal) {
-                                                    Literal l = (Literal) e;
-                                                    return l.getValue()
-                                                            .map(featureKey::equals);
-                                                }
-                                            }
-                                            return fj.data.Option.none();
-                                        }).orElse(() -> srcNode
-                                                .asExpr(Literal.class)
-                                                .bind(Literal::getValue)
-                                                .map(featureKey::equals))
+                                return ConstantFold
+                                        .findConstantLiteralValue(srcNode, String.class)
+                                        .map(featureKey::equals)
                                         .orSome(false);
                             }
 

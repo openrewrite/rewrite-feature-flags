@@ -18,6 +18,8 @@ package org.openrewrite.launchdarkly;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.openrewrite.*;
+import org.openrewrite.analysis.constantfold.ConstantFold;
+import org.openrewrite.analysis.util.CursorUtil;
 import org.openrewrite.internal.StringUtils;
 import org.openrewrite.internal.lang.Nullable;
 import org.openrewrite.java.JavaVisitor;
@@ -75,7 +77,13 @@ public class RemoveBoolVariation extends Recipe {
             @Override
             public J visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {
                 J.MethodInvocation mi = (J.MethodInvocation) super.visitMethodInvocation(method, ctx);
-                if (methodMatcher.matches(mi) && J.Literal.isLiteralValue(mi.getArguments().get(0), featureKey)) {
+                boolean isFirstArgumentFeatureKey =
+                        CursorUtil
+                                .findCursorForTree(getCursor(), mi.getArguments().get(0))
+                                .bind(c -> ConstantFold.findConstantLiteralValue(c, String.class))
+                                .map(featureKey::equals)
+                                .orSome(false);
+                if (methodMatcher.matches(mi) && isFirstArgumentFeatureKey) {
                     doAfterVisit(new SimplifyConstantIfBranchExecution().getVisitor());
                     doAfterVisit(new RemoveUnusedLocalVariables(null).getVisitor());
                     doAfterVisit(new RemoveUnusedPrivateFields().getVisitor());

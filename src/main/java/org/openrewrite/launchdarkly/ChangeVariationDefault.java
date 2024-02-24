@@ -18,6 +18,8 @@ package org.openrewrite.launchdarkly;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.openrewrite.*;
+import org.openrewrite.analysis.constantfold.ConstantFold;
+import org.openrewrite.analysis.util.CursorUtil;
 import org.openrewrite.internal.ListUtils;
 import org.openrewrite.internal.lang.NonNull;
 import org.openrewrite.java.JavaIsoVisitor;
@@ -67,17 +69,23 @@ public class ChangeVariationDefault extends Recipe {
             public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {
                 J.MethodInvocation mi = super.visitMethodInvocation(method, ctx);
                 Expression firstArgument = mi.getArguments().get(0);
+                boolean isFirstArgumentFeatureKey =
+                        CursorUtil
+                                .findCursorForTree(getCursor(), firstArgument)
+                                .bind(c -> ConstantFold.findConstantLiteralValue(c, String.class))
+                                .map(featureKey::equals)
+                                .orSome(false);
                 Expression lastArgument = mi.getArguments().get(mi.getArguments().size() - 1);
-                if (BOOL_VARIATION_MATCHER.matches(mi) && J.Literal.isLiteralValue(firstArgument, featureKey)) {
+                if (BOOL_VARIATION_MATCHER.matches(mi) && isFirstArgumentFeatureKey) {
                     return changeValue(mi, lastArgument, new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, defaultValue, null, JavaType.Primitive.Boolean));
                 }
-                if (STRING_VARIATION_MATCHER.matches(mi) && J.Literal.isLiteralValue(firstArgument, featureKey)) {
+                if (STRING_VARIATION_MATCHER.matches(mi) && isFirstArgumentFeatureKey) {
                     return changeValue(mi, lastArgument, new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, "\"" + defaultValue + "\"", null, JavaType.Primitive.String));
                 }
-                if (INT_VARIATION_MATCHER.matches(mi) && J.Literal.isLiteralValue(firstArgument, featureKey)) {
+                if (INT_VARIATION_MATCHER.matches(mi) && isFirstArgumentFeatureKey) {
                     return changeValue(mi, lastArgument, new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, defaultValue, null, JavaType.Primitive.Int));
                 }
-                if (DOUBLE_VARIATION_MATCHER.matches(mi) && J.Literal.isLiteralValue(firstArgument, featureKey)) {
+                if (DOUBLE_VARIATION_MATCHER.matches(mi) && isFirstArgumentFeatureKey) {
                     return changeValue(mi, lastArgument, new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, defaultValue, null, JavaType.Primitive.Double));
                 }
                 return mi;
