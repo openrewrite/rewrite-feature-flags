@@ -70,6 +70,44 @@ class RemoveBoolVariationTest implements RewriteTest {
     }
 
     @Test
+    void keyInConstant() {
+        rewriteRun(
+          // language=java
+          java(
+            """
+              import com.launchdarkly.sdk.LDContext;
+              import com.launchdarkly.sdk.server.LDClient;
+              
+              class Foo {
+                  private static final String FEATURE_FLAG_123ABC = "flag-key-123abc";
+                  
+                  private LDClient client = new LDClient("sdk-key-123abc");
+                  void bar() {
+                      LDContext context = null;
+                      if (client.boolVariation(FEATURE_FLAG_123ABC, context, false)) {
+                          // Application code to show the feature
+                          System.out.println("Feature is on");
+                      }
+                      else {
+                        // The code to run if the feature is off
+                          System.out.println("Feature is off");
+                      }
+                  }
+              }
+              """,
+            """
+              class Foo {
+                  void bar() {
+                      // Application code to show the feature
+                      System.out.println("Feature is on");
+                  }
+              }
+              """
+          )
+        );
+    }
+
+    @Test
     void enablePermanentlyNegated() {
         rewriteRun(
           // language=java
@@ -202,15 +240,15 @@ class RemoveBoolVariationTest implements RewriteTest {
               """
           ),
           java(
-          """
-            class Bar {
-                void bar() {
-                    if (true) {
-                        // conditional retained; simplify only applies to the file with the feature flag check
-                    }
-                }
-            }
-            """)
+            """
+              class Bar {
+                  void bar() {
+                      if (true) {
+                          // conditional retained; simplify only applies to the file with the feature flag check
+                      }
+                  }
+              }
+              """)
         );
     }
 
@@ -259,10 +297,10 @@ class RemoveBoolVariationTest implements RewriteTest {
           java(
             """
               package com.acme.bank;
-              
+                            
               import com.launchdarkly.sdk.LDContext;
               import com.launchdarkly.sdk.server.LDClient;
-              
+                            
               public class CustomLaunchDarklyWrapper {
                   private LDClient client = new LDClient("sdk-key-123abc");
                   public boolean featureFlagEnabled(String key, boolean fallback) {
