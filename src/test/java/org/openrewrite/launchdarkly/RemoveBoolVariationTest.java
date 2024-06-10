@@ -18,9 +18,11 @@ package org.openrewrite.launchdarkly;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.DocumentExample;
 import org.openrewrite.InMemoryExecutionContext;
+import org.openrewrite.Issue;
 import org.openrewrite.java.JavaParser;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
+import org.openrewrite.test.SourceSpec;
 
 import static org.openrewrite.java.Assertions.java;
 
@@ -80,7 +82,7 @@ class RemoveBoolVariationTest implements RewriteTest {
               
               class Foo {
                   private static final String FEATURE_FLAG_123ABC = "flag-key-123abc";
-                  
+              
                   private LDClient client = new LDClient("sdk-key-123abc");
                   void bar() {
                       LDContext context = null;
@@ -297,10 +299,10 @@ class RemoveBoolVariationTest implements RewriteTest {
           java(
             """
               package com.acme.bank;
-                            
+              
               import com.launchdarkly.sdk.LDContext;
               import com.launchdarkly.sdk.server.LDClient;
-                            
+              
               public class CustomLaunchDarklyWrapper {
                   private LDClient client = new LDClient("sdk-key-123abc");
                   public boolean featureFlagEnabled(String key, boolean fallback) {
@@ -318,6 +320,60 @@ class RemoveBoolVariationTest implements RewriteTest {
                   private CustomLaunchDarklyWrapper wrapper = new CustomLaunchDarklyWrapper();
                   void bar() {
                       if (wrapper.featureFlagEnabled("flag-key-123abc", false)) {
+                          // Application code to show the feature
+                          System.out.println("Feature is on");
+                      }
+                      else {
+                        // The code to run if the feature is off
+                          System.out.println("Feature is off");
+                      }
+                  }
+              }
+              """,
+            """
+              class Foo {
+                  void bar() {
+                      // Application code to show the feature
+                      System.out.println("Feature is on");
+                  }
+              }
+              """
+          )
+        );
+    }
+
+    @Test
+    @Issue("https://github.com/openrewrite/rewrite-launchdarkly/issues/23")
+    void customMethodPatternNoConstants() {
+        RemoveBoolVariation featureToggle1 = new RemoveBoolVariation("FEATURE_TOGGLE1", true, "com.osd.util.ToggleChecker isToggleEnabled(String, boolean)");
+        // language=java
+        rewriteRun(
+          spec -> spec.recipe(featureToggle1),
+          java(
+            """
+            package com.osd.util;
+            import java.util.Map;
+            import java.util.HashMap;
+
+            public class ToggleChecker {
+                public boolean isToggleEnabled(String toggleName, boolean fallback) {
+                    Map<String,Boolean> toggleMap = new HashMap<>();
+                    toggleMap.put("FEATURE_TOGGLE1", true);
+                    toggleMap.put("FEATURE_TOGGLE2", true);
+                    toggleMap.put("FEATURE_TOGGLE3", false);
+                    return toggleMap.containsKey(toggleName);
+                }
+            }
+            """,
+            SourceSpec::skip
+          ),
+          java(
+            """
+              import com.osd.util.ToggleChecker;
+              class Foo {
+                  private ToggleChecker checker = new ToggleChecker();
+                  void bar() {
+                      if (checker.isToggleEnabled("FEATURE_TOGGLE1", false)) {
                           // Application code to show the feature
                           System.out.println("Feature is on");
                       }
