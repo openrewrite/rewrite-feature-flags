@@ -69,12 +69,7 @@ public class ChangeVariationDefault extends Recipe {
             public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {
                 J.MethodInvocation mi = super.visitMethodInvocation(method, ctx);
                 Expression firstArgument = mi.getArguments().get(0);
-                boolean isFirstArgumentFeatureKey =
-                        CursorUtil
-                                .findCursorForTree(getCursor(), firstArgument)
-                                .bind(c -> ConstantFold.findConstantLiteralValue(c, String.class))
-                                .map(featureKey::equals)
-                                .orSome(false);
+                boolean isFirstArgumentFeatureKey = isFeatureKey(firstArgument);
                 Expression lastArgument = mi.getArguments().get(mi.getArguments().size() - 1);
                 if (BOOL_VARIATION_MATCHER.matches(mi) && isFirstArgumentFeatureKey) {
                     return changeValue(mi, lastArgument, new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, defaultValue, null, JavaType.Primitive.Boolean));
@@ -89,6 +84,13 @@ public class ChangeVariationDefault extends Recipe {
                     return changeValue(mi, lastArgument, new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, defaultValue, null, JavaType.Primitive.Double));
                 }
                 return mi;
+            }
+
+            private Boolean isFeatureKey(Expression firstArgument) {
+                return J.Literal.isLiteralValue(firstArgument, featureKey) || CursorUtil.findCursorForTree(getCursor(), firstArgument)
+                        .bind(c -> ConstantFold.findConstantLiteralValue(c, String.class))
+                        .map(featureKey::equals)
+                        .orSome(false);
             }
 
             private J.MethodInvocation changeValue(J.MethodInvocation mi, Expression existingValue, J.Literal newValue) {
