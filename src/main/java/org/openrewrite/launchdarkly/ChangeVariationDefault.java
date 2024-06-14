@@ -69,25 +69,24 @@ public class ChangeVariationDefault extends Recipe {
             public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {
                 J.MethodInvocation mi = super.visitMethodInvocation(method, ctx);
                 Expression firstArgument = mi.getArguments().get(0);
-                boolean isFirstArgumentFeatureKey = isFeatureKey(firstArgument);
                 Expression lastArgument = mi.getArguments().get(mi.getArguments().size() - 1);
-                if (BOOL_VARIATION_MATCHER.matches(mi) && isFirstArgumentFeatureKey) {
+                if (BOOL_VARIATION_MATCHER.matches(mi) && isFeatureKey(firstArgument)) {
                     return changeValue(mi, lastArgument, new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, defaultValue, null, JavaType.Primitive.Boolean));
                 }
-                if (STRING_VARIATION_MATCHER.matches(mi) && isFirstArgumentFeatureKey) {
+                if (STRING_VARIATION_MATCHER.matches(mi) && isFeatureKey(firstArgument)) {
                     return changeValue(mi, lastArgument, new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, "\"" + defaultValue + "\"", null, JavaType.Primitive.String));
                 }
-                if (INT_VARIATION_MATCHER.matches(mi) && isFirstArgumentFeatureKey) {
+                if (INT_VARIATION_MATCHER.matches(mi) && isFeatureKey(firstArgument)) {
                     return changeValue(mi, lastArgument, new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, defaultValue, null, JavaType.Primitive.Int));
                 }
-                if (DOUBLE_VARIATION_MATCHER.matches(mi) && isFirstArgumentFeatureKey) {
+                if (DOUBLE_VARIATION_MATCHER.matches(mi) && isFeatureKey(firstArgument)) {
                     return changeValue(mi, lastArgument, new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, defaultValue, null, JavaType.Primitive.Double));
                 }
                 return mi;
             }
 
             private Boolean isFeatureKey(Expression firstArgument) {
-                return J.Literal.isLiteralValue(firstArgument, featureKey) || CursorUtil.findCursorForTree(getCursor(), firstArgument)
+                return CursorUtil.findCursorForTree(getCursor(), firstArgument)
                         .bind(c -> ConstantFold.findConstantLiteralValue(c, String.class))
                         .map(featureKey::equals)
                         .orSome(false);
