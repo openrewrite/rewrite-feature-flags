@@ -88,8 +88,7 @@ public class RemoveBoolVariation extends Recipe {
             }
 
             private boolean isFeatureKey(Expression firstArgument) {
-                return J.Literal.isLiteralValue(firstArgument, featureKey) ||
-                       CursorUtil.findCursorForTree(getCursor(), firstArgument)
+                return CursorUtil.findCursorForTree(getCursor(), firstArgument)
                                .bind(c -> ConstantFold.findConstantLiteralValue(c, String.class))
                                .map(featureKey::equals)
                                .orSome(false);
