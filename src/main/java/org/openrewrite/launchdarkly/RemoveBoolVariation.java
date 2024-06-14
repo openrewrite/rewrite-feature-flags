@@ -25,6 +25,7 @@ import org.openrewrite.internal.lang.Nullable;
 import org.openrewrite.java.JavaVisitor;
 import org.openrewrite.java.MethodMatcher;
 import org.openrewrite.java.search.UsesMethod;
+import org.openrewrite.java.tree.Expression;
 import org.openrewrite.java.tree.J;
 import org.openrewrite.java.tree.JavaType;
 import org.openrewrite.java.tree.Space;
@@ -77,19 +78,20 @@ public class RemoveBoolVariation extends Recipe {
             @Override
             public J visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {
                 J.MethodInvocation mi = (J.MethodInvocation) super.visitMethodInvocation(method, ctx);
-                boolean isFirstArgumentFeatureKey =
-                        CursorUtil
-                                .findCursorForTree(getCursor(), mi.getArguments().get(0))
-                                .bind(c -> ConstantFold.findConstantLiteralValue(c, String.class))
-                                .map(featureKey::equals)
-                                .orSome(false);
-                if (methodMatcher.matches(mi) && isFirstArgumentFeatureKey) {
+                if (methodMatcher.matches(mi) && isFeatureKey(mi.getArguments().get(0))) {
                     doAfterVisit(new SimplifyConstantIfBranchExecution().getVisitor());
                     doAfterVisit(new RemoveUnusedLocalVariables(null).getVisitor());
                     doAfterVisit(new RemoveUnusedPrivateFields().getVisitor());
                     return new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, replacementValue, String.valueOf(replacementValue), null, JavaType.Primitive.Boolean);
                 }
                 return mi;
+            }
+
+            private boolean isFeatureKey(Expression firstArgument) {
+                return CursorUtil.findCursorForTree(getCursor(), firstArgument)
+                               .bind(c -> ConstantFold.findConstantLiteralValue(c, String.class))
+                               .map(featureKey::equals)
+                               .orSome(false);
             }
         };
         return Preconditions.check(new UsesMethod<>(methodMatcher), visitor);
