@@ -13,15 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openrewrite.launchdarkly;
+package org.openrewrite.featureflags;
 
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.openrewrite.*;
 import org.openrewrite.analysis.constantfold.ConstantFold;
 import org.openrewrite.analysis.util.CursorUtil;
-import org.openrewrite.internal.StringUtils;
-import org.openrewrite.internal.lang.Nullable;
 import org.openrewrite.java.JavaVisitor;
 import org.openrewrite.java.MethodMatcher;
 import org.openrewrite.java.search.UsesMethod;
@@ -34,23 +32,25 @@ import org.openrewrite.staticanalysis.RemoveUnusedLocalVariables;
 import org.openrewrite.staticanalysis.RemoveUnusedPrivateFields;
 import org.openrewrite.staticanalysis.SimplifyConstantIfBranchExecution;
 
-import java.util.Optional;
-
 @Value
 @EqualsAndHashCode(callSuper = false)
-public class RemoveBoolVariation extends Recipe {
-
-    private static final String METHOD_PATTERN_BOOLVARIATION = "com.launchdarkly.sdk.server.LDClient boolVariation(String, com.launchdarkly.sdk.*, boolean)";
+public class RemoveBooleanFlag extends Recipe {
 
     @Override
     public String getDisplayName() {
-        return "Remove `boolVariation` for feature key";
+        return "Remove a boolean feature flag for feature key";
     }
 
     @Override
     public String getDescription() {
-        return "Replace `boolVariation` invocations for feature key with value, and simplify constant if branch execution.";
+        return "Replace method invocations for feature key with value, and simplify constant if branch execution.";
     }
+
+    @Option(displayName = "Method pattern",
+            description = "A method pattern to match against. If not specified, will match `LDClient` `boolVariation`. " +
+                          "The first argument must be the feature key as `String`.",
+            example = "dev.openfeature.sdk.Client getBooleanValue(String, Boolean)")
+    String methodPattern;
 
     @Option(displayName = "Feature flag key",
             description = "The key of the feature flag to remove.",
@@ -62,18 +62,9 @@ public class RemoveBoolVariation extends Recipe {
             example = "true")
     Boolean replacementValue;
 
-    @Option(displayName = "Method pattern",
-            description = "A method pattern to match against. If not specified, will match `LDClient` `boolVariation`. " +
-                          "The first argument must be the feature key as `String`.",
-            example = METHOD_PATTERN_BOOLVARIATION,
-            required = false)
-    @Nullable
-    String methodPattern;
-
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
-        String pattern = Optional.ofNullable(methodPattern).filter(StringUtils::isNotEmpty).orElse(METHOD_PATTERN_BOOLVARIATION);
-        final MethodMatcher methodMatcher = new MethodMatcher(pattern, true);
+        final MethodMatcher methodMatcher = new MethodMatcher(methodPattern, true);
         JavaVisitor<ExecutionContext> visitor = new JavaVisitor<ExecutionContext>() {
             @Override
             public J visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {

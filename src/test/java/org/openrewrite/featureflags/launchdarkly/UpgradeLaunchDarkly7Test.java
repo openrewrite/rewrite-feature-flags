@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openrewrite.launchdarkly;
+package org.openrewrite.featureflags.launchdarkly;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -37,9 +37,9 @@ class UpgradeLaunchDarkly7Test implements RewriteTest {
     @Override
     public void defaults(RecipeSpec spec) {
         spec.recipe(Environment.builder()
-            .scanRuntimeClasspath("org.openrewrite.launchdarkly")
+            .scanRuntimeClasspath("org.openrewrite.featureflags")
             .build()
-            .activateRecipes("org.openrewrite.launchdarkly.UpgradeLaunchDarkly7"))
+            .activateRecipes("org.openrewrite.featureflags.launchdarkly.UpgradeLaunchDarkly7"))
           .parser(JavaParser.fromJavaVersion().classpathFromResources(new InMemoryExecutionContext(), "launchdarkly-java-server-sdk-6"));
     }
 

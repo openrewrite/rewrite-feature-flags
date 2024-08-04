@@ -17,5 +17,5 @@
 ---
 type: specs.openrewrite.org/v1beta/category
 name: LaunchDarkly
-packageName: org.openrewrite.launchdarkly
+packageName: org.openrewrite.featureflags.launchdarkly
 description: Recipes to perform [LaunchDarkly](https://launchdarkly.com/) migration tasks.

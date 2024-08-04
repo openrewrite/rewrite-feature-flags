@@ -21,6 +21,8 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter-engine:latest.release")
 
+    testImplementation("dev.openfeature:sdk:latest.release")
+
     testRuntimeOnly("org.gradle:gradle-tooling-api:latest.release")
 }
 

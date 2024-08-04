@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openrewrite.launchdarkly;
+package org.openrewrite.featureflags.launchdarkly;
 
 import org.junit.jupiter.api.Test;
 import org.openrewrite.DocumentExample;
@@ -33,7 +33,7 @@ import static org.openrewrite.maven.Assertions.pomXml;
 class UpgradeLaunchDarkly6Test implements RewriteTest {
     @Override
     public void defaults(RecipeSpec spec) {
-        spec.recipeFromResource("/META-INF/rewrite/launchdarkly-6.yml", "org.openrewrite.launchdarkly.UpgradeLaunchDarkly6")
+        spec.recipeFromResource("/META-INF/rewrite/launchdarkly-6.yml", "org.openrewrite.featureflags.launchdarkly.UpgradeLaunchDarkly6")
           .parser(JavaParser.fromJavaVersion().classpathFromResources(new InMemoryExecutionContext(), "launchdarkly-java-server-sdk-5"));
     }
 
