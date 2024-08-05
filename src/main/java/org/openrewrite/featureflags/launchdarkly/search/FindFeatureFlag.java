@@ -17,10 +17,7 @@ package org.openrewrite.featureflags.launchdarkly.search;
 
 import lombok.EqualsAndHashCode;
 import lombok.Value;
-import org.openrewrite.ExecutionContext;
-import org.openrewrite.Option;
-import org.openrewrite.Recipe;
-import org.openrewrite.TreeVisitor;
+import org.openrewrite.*;
 import org.openrewrite.analysis.InvocationMatcher;
 import org.openrewrite.analysis.constantfold.ConstantFold;
 import org.openrewrite.analysis.dataflow.DataFlowNode;
@@ -31,6 +28,7 @@ import org.openrewrite.internal.StringUtils;
 import org.openrewrite.internal.lang.Nullable;
 import org.openrewrite.java.JavaIsoVisitor;
 import org.openrewrite.java.MethodMatcher;
+import org.openrewrite.java.search.UsesMethod;
 import org.openrewrite.java.tree.Expression;
 import org.openrewrite.java.tree.J;
 import org.openrewrite.marker.SearchResult;
@@ -38,7 +36,7 @@ import org.openrewrite.marker.SearchResult;
 @Value
 @EqualsAndHashCode(callSuper = false)
 public class FindFeatureFlag extends Recipe {
-    @Option(displayName = "Flag Type",
+    @Option(displayName = "Flag type",
             description = "The feature flag's type.",
             example = "Bool",
             valid = {"Bool", "Double", "Int", "JsonValue", "Migration", "String"},
@@ -46,7 +44,7 @@ public class FindFeatureFlag extends Recipe {
     @Nullable
     FeatureFlagType flagType;
 
-    @Option(displayName = "Feature Key",
+    @Option(displayName = "Feature key",
             description = "The unique key for the feature flag.",
             example = "flag-key-123abc",
             required = false)
@@ -65,12 +63,12 @@ public class FindFeatureFlag extends Recipe {
 
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
-        MethodMatcher launchDarklyClientMatcher = new MethodMatcher("com.launchdarkly.sdk.server.LDClient *Variation(..)");
-        return new JavaIsoVisitor<ExecutionContext>() {
+        MethodMatcher methodMatcher = new MethodMatcher("com.launchdarkly.sdk.server.LDClient *Variation(..)");
+        return Preconditions.check(new UsesMethod<>(methodMatcher), new JavaIsoVisitor<ExecutionContext>() {
             @Override
             public J.MethodInvocation visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {
                 J.MethodInvocation m = super.visitMethodInvocation(method, ctx);
-                if (!launchDarklyClientMatcher.matches(m)) {
+                if (!methodMatcher.matches(m)) {
                     return m;
                 }
 
@@ -104,7 +102,7 @@ public class FindFeatureFlag extends Recipe {
                     return e;
                 }
 
-                InvocationMatcher matcher = InvocationMatcher.fromMethodMatcher(launchDarklyClientMatcher);
+                InvocationMatcher matcher = InvocationMatcher.fromMethodMatcher(methodMatcher);
                 boolean found = Dataflow.startingAt(getCursor())
                         .findSinks(new DataFlowSpec() {
                             @Override
@@ -122,13 +120,13 @@ public class FindFeatureFlag extends Recipe {
                         }).isSome();
                 if (found) {
                    J.MethodInvocation m = getCursor().firstEnclosing(J.MethodInvocation.class);
-                    if (launchDarklyClientMatcher.matches(m)) {
+                    if (methodMatcher.matches(m)) {
                         getCursor().putMessageOnFirstEnclosing(J.MethodInvocation.class, "feature.found", true);
                     }
                 }
                 return e;
             }
-        };
+        });
     }
 
     public enum FeatureFlagType {
