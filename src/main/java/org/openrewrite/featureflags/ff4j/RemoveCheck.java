@@ -40,12 +40,12 @@ public class RemoveCheck extends Recipe {
 
     @Override
     public String getDisplayName() {
-        return "Remove OpenFeature's `getBooleanValue` for feature key";
+        return "Remove FF4j's `check` for feature key";
     }
 
     @Override
     public String getDescription() {
-        return "Replace `getBooleanValue()` invocations for `featureKey` with `replacementValue`, and simplify constant if branch execution.";
+        return "Replace `check()` invocations for `featureKey` with `replacementValue`, and simplify constant if branch execution.";
     }
 
     @Override
