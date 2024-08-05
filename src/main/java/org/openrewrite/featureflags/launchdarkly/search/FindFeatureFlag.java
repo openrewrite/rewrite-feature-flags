@@ -23,7 +23,6 @@ import org.openrewrite.analysis.constantfold.ConstantFold;
 import org.openrewrite.analysis.dataflow.DataFlowNode;
 import org.openrewrite.analysis.dataflow.DataFlowSpec;
 import org.openrewrite.analysis.dataflow.Dataflow;
-import org.openrewrite.analysis.trait.expr.Literal;
 import org.openrewrite.internal.StringUtils;
 import org.openrewrite.internal.lang.Nullable;
 import org.openrewrite.java.JavaIsoVisitor;
@@ -98,12 +97,19 @@ public class FindFeatureFlag extends Recipe {
             @Override
             public Expression visitExpression(Expression expression, ExecutionContext ctx) {
                 Expression e = super.visitExpression(expression, ctx);
+                if (findFeatureKeyFlow() && methodMatcher.matches(getCursor().firstEnclosing(J.MethodInvocation.class))) {
+                    getCursor().putMessageOnFirstEnclosing(J.MethodInvocation.class, "feature.found", true);
+                }
+                return e;
+            }
+
+            private boolean findFeatureKeyFlow() {
                 if (StringUtils.isBlank(featureKey)) {
-                    return e;
+                    return false;
                 }
 
                 InvocationMatcher matcher = InvocationMatcher.fromMethodMatcher(methodMatcher);
-                boolean found = Dataflow.startingAt(getCursor())
+                return Dataflow.startingAt(getCursor())
                         .findSinks(new DataFlowSpec() {
                             @Override
                             public boolean isSource(DataFlowNode srcNode) {
@@ -118,13 +124,6 @@ public class FindFeatureFlag extends Recipe {
                                 return matcher.advanced().isFirstParameter(sinkNode.getCursor());
                             }
                         }).isSome();
-                if (found) {
-                   J.MethodInvocation m = getCursor().firstEnclosing(J.MethodInvocation.class);
-                    if (methodMatcher.matches(m)) {
-                        getCursor().putMessageOnFirstEnclosing(J.MethodInvocation.class, "feature.found", true);
-                    }
-                }
-                return e;
             }
         });
     }
