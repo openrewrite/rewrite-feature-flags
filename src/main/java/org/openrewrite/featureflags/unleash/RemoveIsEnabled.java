@@ -51,7 +51,7 @@ public class RemoveIsEnabled extends Recipe {
     @Override
     public List<Recipe> getRecipeList() {
         return Collections.singletonList(new RemoveBooleanFlag(
-                "io.getunleash.Unleash isEnabled(String)",
+                "io.getunleash.Unleash isEnabled(String, ..)",
                 featureKey, replacementValue));
     }
 }
