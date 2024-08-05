@@ -47,8 +47,7 @@ public class RemoveBooleanFlag extends Recipe {
     }
 
     @Option(displayName = "Method pattern",
-            description = "A method pattern to match against. If not specified, will match `LDClient` `boolVariation`. " +
-                          "The first argument must be the feature key as `String`.",
+            description = "A method pattern to match against. The first argument must be the feature key as `String`.",
             example = "dev.openfeature.sdk.Client getBooleanValue(String, Boolean)")
     String methodPattern;
 
