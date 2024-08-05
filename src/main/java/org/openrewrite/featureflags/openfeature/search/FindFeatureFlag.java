@@ -47,7 +47,7 @@ public class FindFeatureFlag extends Recipe {
 
     @Override
     public List<Recipe> getRecipeList() {
-        return Collections.singletonList(new org.openrewrite.featureflags.FindFeatureFlag(
+        return Collections.singletonList(new org.openrewrite.featureflags.search.FindFeatureFlag(
                 "dev.openfeature.sdk.Features get*Value(String, ..)", featureKey));
     }
 }
