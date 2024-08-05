@@ -27,5 +27,15 @@ description: Recipes to perform [LaunchDarkly](https://launchdarkly.com/) migrat
 ---
 type: specs.openrewrite.org/v1beta/category
 name: OpenFeature
+packageName: org.openrewrite.featureflags.ff4j
+description: Recipes to perform [FF4j](https://ff4j.org/) migration tasks.
+---
+type: specs.openrewrite.org/v1beta/category
+name: OpenFeature
 packageName: org.openrewrite.featureflags.openfeature
 description: Recipes to perform [OpenFeature](https://openfeature.dev/) migration tasks.
+---
+type: specs.openrewrite.org/v1beta/category
+name: OpenFeature
+packageName: org.openrewrite.featureflags.unleash
+description: Recipes to perform [Unleash](https://getunleash.io/) migration tasks.
