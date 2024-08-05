@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openrewrite.launchdarkly;
+package org.openrewrite.featureflags.launchdarkly;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

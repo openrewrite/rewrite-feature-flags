@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openrewrite.launchdarkly.search;
+package org.openrewrite.featureflags.launchdarkly.search;
 
 import org.junit.jupiter.api.Test;
 import org.openrewrite.DocumentExample;

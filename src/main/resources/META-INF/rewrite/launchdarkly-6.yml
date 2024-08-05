@@ -16,7 +16,7 @@
 
 ---
 type: specs.openrewrite.org/v1beta/recipe
-name: org.openrewrite.launchdarkly.UpgradeLaunchDarkly6
+name: org.openrewrite.featureflags.launchdarkly.UpgradeLaunchDarkly6
 displayName: Migrate to LaunchDarkly 6.x
 description: This recipe will apply changes commonly needed when migrating to LaunchDarkly 6.x.
 recipeList:
@@ -25,4 +25,4 @@ recipeList:
       groupId: com.launchdarkly
       artifactId: launchdarkly-java-server-sdk
       newVersion: 6.x
-  - org.openrewrite.launchdarkly.MigrateUserToContext
+  - org.openrewrite.featureflags.launchdarkly.MigrateUserToContext

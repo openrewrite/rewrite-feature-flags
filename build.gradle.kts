@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "org.openrewrite.recipe"
-description = "LaunchDarkly Migration"
+description = "Feature flag migration"
 
 val rewriteVersion = rewriteRecipe.rewriteVersion.get()
 dependencies {
@@ -20,6 +20,10 @@ dependencies {
     testImplementation("org.openrewrite:rewrite-maven")
 
     testImplementation("org.junit.jupiter:junit-jupiter-engine:latest.release")
+
+    testImplementation("dev.openfeature:sdk:latest.release")
+    testImplementation("io.getunleash:unleash-client-java:latest.release")
+    testImplementation("org.ff4j:ff4j-core:2.0.0") // 2.1.x requires Java 21
 
     testRuntimeOnly("org.gradle:gradle-tooling-api:latest.release")
 }
