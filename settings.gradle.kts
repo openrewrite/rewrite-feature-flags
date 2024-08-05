@@ -1,4 +1,4 @@
-rootProject.name = "rewrite-launchdarkly"
+rootProject.name = "rewrite-feature-flags"
 
 plugins {
     id("com.gradle.develocity") version "latest.release"

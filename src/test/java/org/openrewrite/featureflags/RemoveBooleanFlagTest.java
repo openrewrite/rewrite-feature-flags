@@ -71,7 +71,7 @@ class RemoveBooleanFlagTest implements RewriteTest {
     }
 
     @Test
-    @Issue("https://github.com/openrewrite/rewrite-launchdarkly/issues/23")
+    @Issue("https://github.com/openrewrite/rewrite-feature-flags/issues/23")
     void customMethodPatternNoConstants() {
         // language=java
         rewriteRun(
