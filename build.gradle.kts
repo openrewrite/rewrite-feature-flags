@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "org.openrewrite.recipe"
-description = "LaunchDarkly Migration"
+description = "Feature flag migration"
 
 val rewriteVersion = rewriteRecipe.rewriteVersion.get()
 dependencies {
