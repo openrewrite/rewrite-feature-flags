@@ -51,7 +51,7 @@ public class RemoveCheck extends Recipe {
     @Override
     public List<Recipe> getRecipeList() {
         return Collections.singletonList(new RemoveBooleanFlag(
-                "org.ff4j.FF4j check(String)",
+                "org.ff4j.FF4j check(String, ..)",
                 featureKey, replacementValue));
     }
 }

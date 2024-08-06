@@ -51,7 +51,7 @@ public class RemoveGetBooleanValue extends Recipe {
     @Override
     public List<Recipe> getRecipeList() {
         return Collections.singletonList(new RemoveBooleanFlag(
-                "dev.openfeature.sdk.Features getBooleanValue(String, Boolean)",
+                "dev.openfeature.sdk.Features getBooleanValue(String, ..)",
                 featureKey, replacementValue));
     }
 }
