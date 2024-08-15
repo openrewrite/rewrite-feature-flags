@@ -21,7 +21,6 @@ import org.openrewrite.*;
 import org.openrewrite.analysis.constantfold.ConstantFold;
 import org.openrewrite.analysis.util.CursorUtil;
 import org.openrewrite.internal.ListUtils;
-import org.openrewrite.internal.lang.NonNull;
 import org.openrewrite.java.JavaIsoVisitor;
 import org.openrewrite.java.MethodMatcher;
 import org.openrewrite.java.search.UsesMethod;
@@ -47,13 +46,11 @@ public class ChangeVariationDefault extends Recipe {
     @Option(displayName = "Feature flag key",
             description = "The key of the feature flag to remove.",
             example = "flag-key-123abc")
-    @NonNull
     String featureKey;
 
     @Option(displayName = "Default value",
             description = "The default value to use in feature flag invocations.",
             example = "true")
-    @NonNull
     String defaultValue;
 
     private static final MethodMatcher BOOL_VARIATION_MATCHER = new MethodMatcher("com.launchdarkly.sdk.server.LDClient boolVariation(String, com.launchdarkly.sdk.*, boolean)", true);
