@@ -17,7 +17,6 @@ package org.openrewrite.featureflags.launchdarkly;
 
 import lombok.EqualsAndHashCode;
 import lombok.Value;
-import org.jspecify.annotations.NonNull;
 import org.openrewrite.*;
 import org.openrewrite.analysis.constantfold.ConstantFold;
 import org.openrewrite.analysis.util.CursorUtil;
@@ -47,13 +46,11 @@ public class ChangeVariationDefault extends Recipe {
     @Option(displayName = "Feature flag key",
             description = "The key of the feature flag to remove.",
             example = "flag-key-123abc")
-    @NonNull
     String featureKey;
 
     @Option(displayName = "Default value",
             description = "The default value to use in feature flag invocations.",
             example = "true")
-    @NonNull
     String defaultValue;
 
     private static final MethodMatcher BOOL_VARIATION_MATCHER = new MethodMatcher("com.launchdarkly.sdk.server.LDClient boolVariation(String, com.launchdarkly.sdk.*, boolean)", true);
