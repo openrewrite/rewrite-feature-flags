@@ -28,7 +28,7 @@ class RemoveGetBooleanValueTest implements RewriteTest {
     @Override
     public void defaults(RecipeSpec spec) {
         spec.recipe(new RemoveGetBooleanValue("flag-key-123abc", true))
-          .parser(JavaParser.fromJavaVersion().classpath("sdk-1.9.0"));
+          .parser(JavaParser.fromJavaVersion().classpath("sdk"));
     }
 
     @Test
