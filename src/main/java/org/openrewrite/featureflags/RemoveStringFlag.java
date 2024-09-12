@@ -34,7 +34,7 @@ import org.openrewrite.staticanalysis.SimplifyConstantIfBranchExecution;
 
 @Value
 @EqualsAndHashCode(callSuper = false)
-public class RemoveBooleanFlag extends Recipe {
+public class RemoveStringFlag extends Recipe {
 
     @Override
     public String getDisplayName() {
@@ -58,8 +58,8 @@ public class RemoveBooleanFlag extends Recipe {
 
     @Option(displayName = "Replacement value",
             description = "The value to replace the feature flag check with.",
-            example = "true")
-    Boolean replacementValue;
+            example = "topic-456")
+    String replacementValue;
 
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
@@ -72,7 +72,7 @@ public class RemoveBooleanFlag extends Recipe {
                     doAfterVisit(new SimplifyConstantIfBranchExecution().getVisitor());
                     doAfterVisit(new RemoveUnusedLocalVariables(null).getVisitor());
                     doAfterVisit(new RemoveUnusedPrivateFields().getVisitor());
-                    J.Literal literal = new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, replacementValue, String.valueOf(replacementValue), null, JavaType.Primitive.Boolean);
+                    J.Literal literal = new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, replacementValue, '"' + replacementValue + '"', null, JavaType.Primitive.String);
                     return literal.withPrefix(mi.getPrefix());
                 }
                 return mi;
