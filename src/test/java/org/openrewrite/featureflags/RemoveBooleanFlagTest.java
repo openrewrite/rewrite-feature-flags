@@ -16,6 +16,7 @@
 package org.openrewrite.featureflags;
 
 import org.junit.jupiter.api.Test;
+import org.openrewrite.DocumentExample;
 import org.openrewrite.Issue;
 import org.openrewrite.test.RewriteTest;
 import org.openrewrite.test.SourceSpec;
@@ -25,6 +26,7 @@ import static org.openrewrite.java.Assertions.java;
 class RemoveBooleanFlagTest implements RewriteTest {
 
     @Test
+    @DocumentExample
     void customMethodPatternForWrapper() {
         rewriteRun(
           spec -> spec.recipe(new RemoveBooleanFlag("com.acme.bank.CustomLaunchDarklyWrapper featureFlagEnabled(String, boolean)", "flag-key-123abc", true)),
