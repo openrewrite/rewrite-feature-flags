@@ -38,7 +38,7 @@ public class RemoveStringFlag extends Recipe {
 
     @Override
     public String getDisplayName() {
-        return "Remove a boolean feature flag for feature key";
+        return "Remove a String feature flag for feature key";
     }
 
     @Override
