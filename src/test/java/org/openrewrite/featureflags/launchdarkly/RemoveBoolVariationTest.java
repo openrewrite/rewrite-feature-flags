@@ -179,6 +179,89 @@ class RemoveBoolVariationTest implements RewriteTest {
     }
 
     @Test
+    void removeUnusedLDContextWithBuilder() {
+        rewriteRun(
+          // language=java
+          java(
+            """
+              import com.launchdarkly.sdk.*;
+              import com.launchdarkly.sdk.server.*;
+              class Foo {
+                  LDClient client = new LDClient("sdk-key-123abc");
+                  void bar() {
+                      LDContext context = LDContext.builder("context-key-123abc")
+                        .name("Sandy")
+                        .build();
+                      if (client.boolVariation("flag-key-123abc", context, false)) {
+                          // Application code to show the feature
+                          System.out.println("Feature is on");
+                      }
+                      else {
+                        // The code to run if the feature is off
+                          System.out.println("Feature is off");
+                      }
+                  }
+              }
+              """,
+            """
+              import com.launchdarkly.sdk.*;
+              import com.launchdarkly.sdk.server.*;
+              class Foo {
+                  LDClient client = new LDClient("sdk-key-123abc");
+                  void bar() {
+                      // Application code to show the feature
+                      System.out.println("Feature is on");
+                  }
+              }
+              """
+          )
+        );
+    }
+
+    @Test
+    void removeUnusedLDContextWithBuilderContext() {
+        rewriteRun(
+          // language=java
+          java(
+            """
+              import com.launchdarkly.sdk.*;
+              import com.launchdarkly.sdk.server.*;
+              class Foo {
+                  LDClient client = new LDClient("sdk-key-123abc");
+                  void bar() {
+                      LDContext ldContext = LDContext.create("newValue")
+                      LDContext context = LDContext.builderFromContext(ldContext)
+                                .anonymous(false)
+                                .name("name")
+                                .set("email", "email@gmail.com")
+                                .build();
+                      if (client.boolVariation("flag-key-123abc", context, false)) {
+                          // Application code to show the feature
+                          System.out.println("Feature is on");
+                      }
+                      else {
+                        // The code to run if the feature is off
+                          System.out.println("Feature is off");
+                      }
+                  }
+              }
+              """,
+            """
+              import com.launchdarkly.sdk.*;
+              import com.launchdarkly.sdk.server.*;
+              class Foo {
+                  LDClient client = new LDClient("sdk-key-123abc");
+                  void bar() {
+                      // Application code to show the feature
+                      System.out.println("Feature is on");
+                  }
+              }
+              """
+          )
+        );
+    }
+
+    @Test
     void enablePermanentlyWithParameters() {
         rewriteRun(
           // language=java
