@@ -204,7 +204,6 @@ class RemoveBoolVariationTest implements RewriteTest {
               }
               """,
             """
-              import com.launchdarkly.sdk.*;
               import com.launchdarkly.sdk.server.*;
               class Foo {
                   LDClient client = new LDClient("sdk-key-123abc");
@@ -229,7 +228,7 @@ class RemoveBoolVariationTest implements RewriteTest {
               class Foo {
                   LDClient client = new LDClient("sdk-key-123abc");
                   void bar() {
-                      LDContext ldContext = LDContext.create("newValue")
+                      LDContext ldContext = LDContext.create("newValue");
                       LDContext context = LDContext.builderFromContext(ldContext)
                                 .anonymous(false)
                                 .name("name")
@@ -252,6 +251,7 @@ class RemoveBoolVariationTest implements RewriteTest {
               class Foo {
                   LDClient client = new LDClient("sdk-key-123abc");
                   void bar() {
+                      LDContext ldContext = LDContext.create("newValue");
                       // Application code to show the feature
                       System.out.println("Feature is on");
                   }
