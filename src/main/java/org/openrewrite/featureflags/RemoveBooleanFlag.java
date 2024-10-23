@@ -70,7 +70,7 @@ public class RemoveBooleanFlag extends Recipe {
                 J.MethodInvocation mi = (J.MethodInvocation) super.visitMethodInvocation(method, ctx);
                 if (methodMatcher.matches(mi) && isFeatureKey(mi.getArguments().get(0))) {
                     doAfterVisit(new SimplifyConstantIfBranchExecution().getVisitor());
-                    doAfterVisit(new RemoveUnusedLocalVariables(null).getVisitor());
+                    doAfterVisit(new RemoveUnusedLocalVariables(null, null).getVisitor());
                     doAfterVisit(new RemoveUnusedPrivateFields().getVisitor());
                     J.Literal literal = new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, replacementValue, String.valueOf(replacementValue), null, JavaType.Primitive.Boolean);
                     return literal.withPrefix(mi.getPrefix());
