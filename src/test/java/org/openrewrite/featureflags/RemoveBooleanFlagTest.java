@@ -34,13 +34,14 @@ class RemoveBooleanFlagTest implements RewriteTest {
           java(
             """
               package com.acme.bank;
-
+              
               public class CustomLaunchDarklyWrapper {
                   public boolean featureFlagEnabled(String key, boolean fallback) {
                       return fallback;
                   }
               }
-              """
+              """,
+            SourceSpec::skip
           ),
           // language=java
           java(
@@ -83,7 +84,7 @@ class RemoveBooleanFlagTest implements RewriteTest {
               package com.osd.util;
               import java.util.Map;
               import java.util.HashMap;
-
+              
               public class ToggleChecker {
                   public boolean isToggleEnabled(String toggleName, boolean fallback) {
                       Map<String,Boolean> toggleMap = new HashMap<>();
@@ -103,6 +104,55 @@ class RemoveBooleanFlagTest implements RewriteTest {
                   private ToggleChecker checker = new ToggleChecker();
                   void bar() {
                       if (checker.isToggleEnabled("FEATURE_TOGGLE1", false)) {
+                          // Application code to show the feature
+                          System.out.println("Feature is on");
+                      }
+                      else {
+                        // The code to run if the feature is off
+                          System.out.println("Feature is off");
+                      }
+                  }
+              }
+              """,
+            """
+              class Foo {
+                  void bar() {
+                      // Application code to show the feature
+                      System.out.println("Feature is on");
+                  }
+              }
+              """
+          )
+        );
+    }
+
+    @Test
+    void removeWhenFeatureFlagIsAConstant() {
+        rewriteRun(
+          spec -> spec.recipe(new RemoveBooleanFlag("com.acme.bank.CustomLaunchDarklyWrapper featureFlagEnabled(String, boolean)", "flag-key-123abc", true)),
+          // language=java
+          java(
+            """
+              package com.acme.bank;
+              
+              public class CustomLaunchDarklyWrapper {
+                  public boolean featureFlagEnabled(String key, boolean fallback) {
+                      return fallback;
+                  }
+              }
+              """,
+            SourceSpec::skip
+          ),
+          // language=java
+          java(
+            """
+              import com.acme.bank.CustomLaunchDarklyWrapper;
+              class Foo {
+                  private static final String FEATURE_TOGGLE = "flag-key-123abc";
+              
+                  private CustomLaunchDarklyWrapper wrapper = new CustomLaunchDarklyWrapper();
+                  void bar() {
+                      if (wrapper.featureFlagEnabled(FEATURE_TOGGLE, false)) {
                           // Application code to show the feature
                           System.out.println("Feature is on");
                       }
