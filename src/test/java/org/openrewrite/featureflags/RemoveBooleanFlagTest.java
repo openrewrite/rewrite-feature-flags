@@ -174,4 +174,43 @@ class RemoveBooleanFlagTest implements RewriteTest {
           )
         );
     }
+
+    @Test
+    void removeUnnecessaryTernary() {
+        rewriteRun(
+          spec -> spec.recipe(new RemoveBooleanFlag("com.acme.bank.CustomLaunchDarklyWrapper featureFlagEnabled(String, boolean)", "flag-key-123abc", true)),
+          // language=java
+          java(
+            """
+              package com.acme.bank;
+              
+              public class CustomLaunchDarklyWrapper {
+                  public boolean featureFlagEnabled(String key, boolean fallback) {
+                      return fallback;
+                  }
+              }
+              """,
+            SourceSpec::skip
+          ),
+          // language=java
+          java(
+            """
+              import com.acme.bank.CustomLaunchDarklyWrapper;
+              class Foo {
+                  private CustomLaunchDarklyWrapper wrapper = new CustomLaunchDarklyWrapper();
+                  String bar() {
+                      return wrapper.featureFlagEnabled("flag-key-123abc", false) ? "Feature is on" : "Feature is off";
+                  }
+              }
+              """,
+            """
+              class Foo {
+                  String bar() {
+                      return "Feature is on";
+                  }
+              }
+              """
+          )
+        );
+    }
 }
