@@ -205,7 +205,7 @@ class RemoveBooleanFlagTest implements RewriteTest {
               """,
             """
               class Foo {
-                  void bar() {
+                  String bar() {
                       return "Feature is on";
                   }
               }
