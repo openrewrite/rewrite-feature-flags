@@ -71,7 +71,6 @@ class RemoveStringFlagTest implements RewriteTest {
         );
     }
 
-    @Disabled("This test is disabled because it is not yet implemented.")
     @Test
     void removeEqualsComparison() {
         rewriteRun(
