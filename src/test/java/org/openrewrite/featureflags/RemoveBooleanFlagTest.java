@@ -34,7 +34,7 @@ class RemoveBooleanFlagTest implements RewriteTest {
           java(
             """
               package com.acme.bank;
-              
+
               public class CustomLaunchDarklyWrapper {
                   public boolean featureFlagEnabled(String key, boolean fallback) {
                       return fallback;
@@ -50,7 +50,8 @@ class RemoveBooleanFlagTest implements RewriteTest {
               class Foo {
                   private CustomLaunchDarklyWrapper wrapper = new CustomLaunchDarklyWrapper();
                   void bar() {
-                      if (wrapper.featureFlagEnabled("flag-key-123abc", false)) {
+                      boolean enabled = wrapper.featureFlagEnabled("flag-key-123abc", false);
+                      if (enabled) {
                           // Application code to show the feature
                           System.out.println("Feature is on");
                       }
@@ -84,7 +85,7 @@ class RemoveBooleanFlagTest implements RewriteTest {
               package com.osd.util;
               import java.util.Map;
               import java.util.HashMap;
-              
+
               public class ToggleChecker {
                   public boolean isToggleEnabled(String toggleName, boolean fallback) {
                       Map<String,Boolean> toggleMap = new HashMap<>();
@@ -134,7 +135,7 @@ class RemoveBooleanFlagTest implements RewriteTest {
           java(
             """
               package com.acme.bank;
-              
+
               public class CustomLaunchDarklyWrapper {
                   public boolean featureFlagEnabled(String key, boolean fallback) {
                       return fallback;
@@ -149,7 +150,7 @@ class RemoveBooleanFlagTest implements RewriteTest {
               import com.acme.bank.CustomLaunchDarklyWrapper;
               class Foo {
                   private static final String FEATURE_TOGGLE = "flag-key-123abc";
-              
+
                   private CustomLaunchDarklyWrapper wrapper = new CustomLaunchDarklyWrapper();
                   void bar() {
                       if (wrapper.featureFlagEnabled(FEATURE_TOGGLE, false)) {
@@ -183,7 +184,7 @@ class RemoveBooleanFlagTest implements RewriteTest {
           java(
             """
               package com.acme.bank;
-              
+
               public class CustomLaunchDarklyWrapper {
                   public boolean featureFlagEnabled(String key, boolean fallback) {
                       return fallback;

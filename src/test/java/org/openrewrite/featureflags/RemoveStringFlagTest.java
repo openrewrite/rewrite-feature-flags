@@ -15,7 +15,6 @@
  */
 package org.openrewrite.featureflags;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.DocumentExample;
 import org.openrewrite.java.JavaParser;
@@ -62,8 +61,7 @@ class RemoveStringFlagTest implements RewriteTest {
             """
               class Foo {
                   void bar() {
-                      String topic = "topic-456";
-                      System.out.println("Publishing to topic: " + topic);
+                      System.out.println("Publishing to topic: " + "topic-456");
                   }
               }
               """
