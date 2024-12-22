@@ -17,11 +17,13 @@ package org.openrewrite.featureflags;
 
 import lombok.EqualsAndHashCode;
 import lombok.Value;
+import org.jspecify.annotations.Nullable;
 import org.openrewrite.*;
 import org.openrewrite.analysis.constantfold.ConstantFold;
 import org.openrewrite.analysis.util.CursorUtil;
 import org.openrewrite.java.JavaVisitor;
 import org.openrewrite.java.MethodMatcher;
+import org.openrewrite.java.search.SemanticallyEqual;
 import org.openrewrite.java.search.UsesMethod;
 import org.openrewrite.java.tree.Expression;
 import org.openrewrite.java.tree.J;
@@ -66,23 +68,54 @@ public class RemoveStringFlag extends Recipe {
         final MethodMatcher methodMatcher = new MethodMatcher(methodPattern, true);
         JavaVisitor<ExecutionContext> visitor = new JavaVisitor<ExecutionContext>() {
             @Override
+            public @Nullable J visitVariableDeclarations(J.VariableDeclarations multiVariable, ExecutionContext ctx) {
+                if (multiVariable.getVariables().size() == 1 && matches(multiVariable.getVariables().get(0).getInitializer())) {
+                    // Remove the variable declaration and inline any references to the variable with the literal value
+                    J.Identifier identifierToReplaceWithLiteral = multiVariable.getVariables().get(0).getName();
+                    doAfterVisit(new JavaVisitor<ExecutionContext>() {
+                        @Override
+                        public J visitIdentifier(J.Identifier ident, ExecutionContext ctx) {
+                            if (SemanticallyEqual.areEqual(ident , identifierToReplaceWithLiteral)) {
+                                return buildLiteral().withPrefix(ident.getPrefix());
+                            }
+                            return ident;
+                        }
+                    });
+                    cleanUpAfterReplacements();
+                    return null;
+                }
+                return super.visitVariableDeclarations(multiVariable, ctx);
+            }
+
+            @Override
             public J visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {
                 J.MethodInvocation mi = (J.MethodInvocation) super.visitMethodInvocation(method, ctx);
-                if (methodMatcher.matches(mi) && isFeatureKey(mi.getArguments().get(0))) {
-                    doAfterVisit(new SimplifyConstantIfBranchExecution().getVisitor());
-                    doAfterVisit(Repeat.repeatUntilStable(new RemoveUnusedLocalVariables(null, true).getVisitor(), 3));
-                    doAfterVisit(new RemoveUnusedPrivateFields().getVisitor());
-                    J.Literal literal = new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, replacementValue, '"' + replacementValue + '"', null, JavaType.Primitive.String);
-                    return literal.withPrefix(mi.getPrefix());
+                if (matches(mi)) {
+                    cleanUpAfterReplacements();
+                    return buildLiteral().withPrefix(mi.getPrefix());
                 }
                 return mi;
             }
 
-            private boolean isFeatureKey(Expression firstArgument) {
-                return CursorUtil.findCursorForTree(getCursor(), firstArgument)
-                               .bind(c -> ConstantFold.findConstantLiteralValue(c, String.class))
-                               .map(featureKey::equals)
-                               .orSome(false);
+            private boolean matches(@Nullable Expression expression) {
+                if (methodMatcher.matches(expression)) {
+                    Expression firstArgument = ((J.MethodInvocation) expression).getArguments().get(0);
+                    return CursorUtil.findCursorForTree(getCursor(), firstArgument)
+                            .bind(c -> ConstantFold.findConstantLiteralValue(c, String.class))
+                            .map(featureKey::equals)
+                            .orSome(false);
+                }
+                return false;
+            }
+
+            private void cleanUpAfterReplacements() {
+                doAfterVisit(new SimplifyConstantIfBranchExecution().getVisitor());
+                doAfterVisit(Repeat.repeatUntilStable(new RemoveUnusedLocalVariables(null, true).getVisitor(), 3));
+                doAfterVisit(new RemoveUnusedPrivateFields().getVisitor());
+            }
+
+            private J.Literal buildLiteral() {
+                return new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, replacementValue, '"' + replacementValue + '"', null, JavaType.Primitive.String);
             }
         };
         return Preconditions.check(new UsesMethod<>(methodMatcher), visitor);

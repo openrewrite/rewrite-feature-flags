@@ -18,6 +18,7 @@ package org.openrewrite.featureflags.launchdarkly;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.DocumentExample;
 import org.openrewrite.InMemoryExecutionContext;
+import org.openrewrite.Issue;
 import org.openrewrite.java.JavaParser;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
@@ -77,10 +78,10 @@ class RemoveBoolVariationTest implements RewriteTest {
             """
               import com.launchdarkly.sdk.LDContext;
               import com.launchdarkly.sdk.server.LDClient;
-              
+
               class Foo {
                   private static final String FEATURE_FLAG_123ABC = "flag-key-123abc";
-              
+
                   private LDClient client = new LDClient("sdk-key-123abc");
                   void bar() {
                       LDContext context = null;
@@ -333,6 +334,7 @@ class RemoveBoolVariationTest implements RewriteTest {
         );
     }
 
+    @Issue("https://github.com/openrewrite/rewrite-feature-flags/issues/40")
     @Test
     void localVariablesNotInlined() {
         // language=java
@@ -357,12 +359,8 @@ class RemoveBoolVariationTest implements RewriteTest {
             """
               class Foo {
                   void bar() {
-                      // Local variables not yet inlined
-                      boolean flagEnabled = true;
-                      if (flagEnabled) {
-                          // Application code to show the feature
-                          System.out.println("Feature is on");
-                      }
+                      // Application code to show the feature
+                      System.out.println("Feature is on");
                   }
               }
               """

@@ -54,8 +54,7 @@ class RemoveStringVariationTest implements RewriteTest {
             """
               class Foo {
                   void bar() {
-                      String topic = "topic-456";
-                      System.out.println("Publishing to topic: " + topic);
+                      System.out.println("Publishing to topic: " + "topic-456");
                   }
               }
               """
