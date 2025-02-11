@@ -19,7 +19,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Value;
 import org.openrewrite.Option;
 import org.openrewrite.Recipe;
-import org.openrewrite.featureflags.RemoveBooleanFlag;
 import org.openrewrite.featureflags.RemoveStringFlag;
 
 import java.util.Collections;
