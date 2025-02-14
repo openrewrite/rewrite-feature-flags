@@ -30,7 +30,7 @@ class ChangeVariationDefaultTest implements RewriteTest {
     public void defaults(RecipeSpec spec) {
         spec.recipe(new ChangeVariationDefault("flag-key-123abc", "true"))
           .parser(JavaParser.fromJavaVersion()
-            .classpathFromResources(new InMemoryExecutionContext(), "launchdarkly-java-server-sdk-6"));
+            .classpathFromResources(new InMemoryExecutionContext(), "launchdarkly-java-server-sdk-6.+"));
     }
 
     @Nested

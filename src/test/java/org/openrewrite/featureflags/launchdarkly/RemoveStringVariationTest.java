@@ -30,7 +30,7 @@ class RemoveStringVariationTest implements RewriteTest {
     public void defaults(RecipeSpec spec) {
         spec.recipe(new RemoveStringVariation("flag-key-123abc", "topic-456"))
           .parser(JavaParser.fromJavaVersion()
-            .classpathFromResources(new InMemoryExecutionContext(), "launchdarkly-java-server-sdk-6"));
+            .classpathFromResources(new InMemoryExecutionContext(), "launchdarkly-java-server-sdk-6.+"));
     }
 
     @Test
