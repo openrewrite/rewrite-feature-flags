@@ -30,7 +30,7 @@ dependencies {
 }
 
 recipeDependencies {
-    parserClasspath("com.launchdarkly:launchdarkly-java-server-sdk:5.10.+")
+    parserClasspath("com.launchdarkly:launchdarkly-java-server-sdk:5.+")
     parserClasspath("com.launchdarkly:launchdarkly-java-server-sdk:6.+")
     //parserClasspath("com.launchdarkly:launchdarkly-java-server-sdk:7.+")
 }
