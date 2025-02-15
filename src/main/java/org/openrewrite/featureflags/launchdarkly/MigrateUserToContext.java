@@ -70,7 +70,7 @@ public class MigrateUserToContext extends Recipe {
                             doAfterVisit(new ChangeType("com.launchdarkly.sdk.LDUser", "com.launchdarkly.sdk.LDContext", null).getVisitor());
                             return JavaTemplate.builder("LDContext.create(#{any(java.lang.String)})")
                                     .contextSensitive()
-                                    .javaParser(JavaParser.fromJavaVersion().classpathFromResources(ctx, "launchdarkly-java-server-sdk-6"))
+                                    .javaParser(JavaParser.fromJavaVersion().classpathFromResources(ctx, "launchdarkly-java-server-sdk-6.+"))
                                     .imports("com.launchdarkly.sdk.LDContext")
                                     .build()
                                     .apply(getCursor(), newClass.getCoordinates().replace(), newClass.getArguments().get(0));
@@ -80,7 +80,7 @@ public class MigrateUserToContext extends Recipe {
                             doAfterVisit(new ChangeType("com.launchdarkly.sdk.LDUser", "com.launchdarkly.sdk.LDContext", null).getVisitor());
                             return JavaTemplate.builder("LDContext.builder(#{any(java.lang.String)})")
                                     .contextSensitive()
-                                    .javaParser(JavaParser.fromJavaVersion().classpathFromResources(ctx, "launchdarkly-java-server-sdk-6"))
+                                    .javaParser(JavaParser.fromJavaVersion().classpathFromResources(ctx, "launchdarkly-java-server-sdk-6.+"))
                                     .imports("com.launchdarkly.sdk.LDContext")
                                     .build()
                                     .apply(getCursor(), newClass.getCoordinates().replace(), newClass.getArguments().get(0));
@@ -101,7 +101,7 @@ public class MigrateUserToContext extends Recipe {
                             }
                             return JavaTemplate.builder(code)
                                     .contextSensitive()
-                                    .javaParser(JavaParser.fromJavaVersion().classpathFromResources(ctx, "launchdarkly-java-server-sdk-6"))
+                                    .javaParser(JavaParser.fromJavaVersion().classpathFromResources(ctx, "launchdarkly-java-server-sdk-6.+"))
                                     .imports("com.launchdarkly.sdk.ContextBuilder")
                                     .build()
                                     .apply(
@@ -123,7 +123,7 @@ public class MigrateUserToContext extends Recipe {
                             String attributeName = StringUtils.uncapitalize(m.getSimpleName().replace("private", ""));
                             return JavaTemplate.builder(code)
                                     .contextSensitive()
-                                    .javaParser(JavaParser.fromJavaVersion().classpathFromResources(ctx, "launchdarkly-java-server-sdk-6"))
+                                    .javaParser(JavaParser.fromJavaVersion().classpathFromResources(ctx, "launchdarkly-java-server-sdk-6.+"))
                                     .imports("com.launchdarkly.sdk.ContextBuilder")
                                     .build()
                                     .apply(
@@ -143,7 +143,7 @@ public class MigrateUserToContext extends Recipe {
                             }
                             return JavaTemplate.builder(code)
                                     .contextSensitive()
-                                    .javaParser(JavaParser.fromJavaVersion().classpathFromResources(ctx, "launchdarkly-java-server-sdk-6"))
+                                    .javaParser(JavaParser.fromJavaVersion().classpathFromResources(ctx, "launchdarkly-java-server-sdk-6.+"))
                                     .imports("com.launchdarkly.sdk.ContextBuilder")
                                     .build()
                                     .apply(getCursor(), m.getCoordinates().replace(), m.getSelect(), m.getArguments().get(0), m.getArguments().get(1));
@@ -158,7 +158,7 @@ public class MigrateUserToContext extends Recipe {
                             }
                             return JavaTemplate.builder(code)
                                     .contextSensitive()
-                                    .javaParser(JavaParser.fromJavaVersion().classpathFromResources(ctx, "launchdarkly-java-server-sdk-6"))
+                                    .javaParser(JavaParser.fromJavaVersion().classpathFromResources(ctx, "launchdarkly-java-server-sdk-6.+"))
                                     .imports("com.launchdarkly.sdk.ContextBuilder")
                                     .build()
                                     .apply(getCursor(), m.getCoordinates().replace(), m.getSelect(), m.getArguments().get(0), m.getArguments().get(1), m.getArguments().get(0));

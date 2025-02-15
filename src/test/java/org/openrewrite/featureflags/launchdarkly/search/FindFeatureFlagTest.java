@@ -27,7 +27,8 @@ import static org.openrewrite.java.Assertions.java;
 class FindFeatureFlagTest implements RewriteTest {
     @Override
     public void defaults(RecipeSpec spec) {
-        spec.parser(JavaParser.fromJavaVersion().classpathFromResources(new InMemoryExecutionContext(), "launchdarkly-java-server-sdk-5"));
+        spec.parser(JavaParser.fromJavaVersion().classpathFromResources(new InMemoryExecutionContext(),
+          "launchdarkly-java-server-sdk-5.+"));
     }
 
     @Test
@@ -40,13 +41,9 @@ class FindFeatureFlagTest implements RewriteTest {
             """
               import com.launchdarkly.sdk.LDUser;
               import com.launchdarkly.sdk.server.LDClient;
-              
+
               class Test {
-                  public void a() {
-                      LDClient client = new LDClient("sdk-key");
-                      LDUser user = new LDUser.Builder("user-key")
-                              .name("user")
-                              .build();
+                  public void a(LDClient client, LDUser user) {
                       boolean flagValue = client.boolVariation("flag-key-123abc", user, false);
                       if (flagValue) {
                           // Application code to show the feature
@@ -59,13 +56,9 @@ class FindFeatureFlagTest implements RewriteTest {
             """
               import com.launchdarkly.sdk.LDUser;
               import com.launchdarkly.sdk.server.LDClient;
-              
+
               class Test {
-                  public void a() {
-                      LDClient client = new LDClient("sdk-key");
-                      LDUser user = new LDUser.Builder("user-key")
-                              .name("user")
-                              .build();
+                  public void a(LDClient client, LDUser user) {
                       boolean flagValue = /*~~>*/client.boolVariation("flag-key-123abc", user, false);
                       if (flagValue) {
                           // Application code to show the feature
@@ -88,13 +81,9 @@ class FindFeatureFlagTest implements RewriteTest {
             """
               import com.launchdarkly.sdk.LDUser;
               import com.launchdarkly.sdk.server.LDClient;
-              
+
               class Test {
-                  public void a() {
-                      LDClient client = new LDClient("sdk-key");
-                      LDUser user = new LDUser.Builder("user-key")
-                              .name("user")
-                              .build();
+                  public void a(LDClient client, LDUser user) {
                       boolean flagValue = client.boolVariation("flag-key-123abc", user, false);
                       if (flagValue) {
                           // Application code to show the feature
@@ -113,13 +102,9 @@ class FindFeatureFlagTest implements RewriteTest {
             """
               import com.launchdarkly.sdk.LDUser;
               import com.launchdarkly.sdk.server.LDClient;
-              
+
               class Test {
-                  public void a() {
-                      LDClient client = new LDClient("sdk-key");
-                      LDUser user = new LDUser.Builder("user-key")
-                              .name("user")
-                              .build();
+                  public void a(LDClient client, LDUser user) {
                       boolean flagValue = /*~~>*/client.boolVariation("flag-key-123abc", user, false);
                       if (flagValue) {
                           // Application code to show the feature
@@ -148,13 +133,9 @@ class FindFeatureFlagTest implements RewriteTest {
             """
               import com.launchdarkly.sdk.LDUser;
               import com.launchdarkly.sdk.server.LDClient;
-              
+
               class Test {
-                  public void a() {
-                      LDClient client = new LDClient("sdk-key");
-                      LDUser user = new LDUser.Builder("user-key")
-                              .name("user")
-                              .build();
+                  public void a(LDClient client, LDUser user) {
                       boolean flagValue = client.boolVariation("flag-key-123abc", user, false);
                       if (flagValue) {
                           // Application code to show the feature
@@ -173,13 +154,9 @@ class FindFeatureFlagTest implements RewriteTest {
             """
               import com.launchdarkly.sdk.LDUser;
               import com.launchdarkly.sdk.server.LDClient;
-              
+
               class Test {
-                  public void a() {
-                      LDClient client = new LDClient("sdk-key");
-                      LDUser user = new LDUser.Builder("user-key")
-                              .name("user")
-                              .build();
+                  public void a(LDClient client, LDUser user) {
                       boolean flagValue = /*~~>*/client.boolVariation("flag-key-123abc", user, false);
                       if (flagValue) {
                           // Application code to show the feature
@@ -208,13 +185,9 @@ class FindFeatureFlagTest implements RewriteTest {
             """
               import com.launchdarkly.sdk.LDUser;
               import com.launchdarkly.sdk.server.LDClient;
-              
+
               class Test {
-                  public void a() {
-                      LDClient client = new LDClient("sdk-key");
-                      LDUser user = new LDUser.Builder("user-key")
-                              .name("user")
-                              .build();
+                  public void a(LDClient client, LDUser user) {
                       boolean flagValue = client.boolVariation("flag-key-123abc", user, false);
                       if (flagValue) {
                           // Application code to show the feature
@@ -233,13 +206,9 @@ class FindFeatureFlagTest implements RewriteTest {
             """
               import com.launchdarkly.sdk.LDUser;
               import com.launchdarkly.sdk.server.LDClient;
-              
+
               class Test {
-                  public void a() {
-                      LDClient client = new LDClient("sdk-key");
-                      LDUser user = new LDUser.Builder("user-key")
-                              .name("user")
-                              .build();
+                  public void a(LDClient client, LDUser user) {
                       boolean flagValue = /*~~>*/client.boolVariation("flag-key-123abc", user, false);
                       if (flagValue) {
                           // Application code to show the feature
@@ -268,15 +237,11 @@ class FindFeatureFlagTest implements RewriteTest {
             """
               import com.launchdarkly.sdk.LDUser;
               import com.launchdarkly.sdk.server.LDClient;
-              
+
               class Test {
                   private static final String FEATURE_FLAG = "flag-key-123abc";
                   private static final String FEATURE2_FLAG = "flag-key-789def";
-                  public void a() {
-                      LDClient client = new LDClient("sdk-key");
-                      LDUser user = new LDUser.Builder("user-key")
-                              .name("user")
-                              .build();
+                  public void a(LDClient client, LDUser user) {
                       boolean flagValue = client.boolVariation(FEATURE_FLAG, user, false);
                       if (flagValue) {
                           // Application code to show the feature
@@ -295,15 +260,11 @@ class FindFeatureFlagTest implements RewriteTest {
             """
               import com.launchdarkly.sdk.LDUser;
               import com.launchdarkly.sdk.server.LDClient;
-              
+
               class Test {
                   private static final String FEATURE_FLAG = "flag-key-123abc";
                   private static final String FEATURE2_FLAG = "flag-key-789def";
-                  public void a() {
-                      LDClient client = new LDClient("sdk-key");
-                      LDUser user = new LDUser.Builder("user-key")
-                              .name("user")
-                              .build();
+                  public void a(LDClient client, LDUser user) {
                       boolean flagValue = /*~~>*/client.boolVariation(FEATURE_FLAG, user, false);
                       if (flagValue) {
                           // Application code to show the feature

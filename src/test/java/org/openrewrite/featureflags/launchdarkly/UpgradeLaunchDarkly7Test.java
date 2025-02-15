@@ -40,7 +40,7 @@ class UpgradeLaunchDarkly7Test implements RewriteTest {
             .scanRuntimeClasspath("org.openrewrite.featureflags")
             .build()
             .activateRecipes("org.openrewrite.featureflags.launchdarkly.UpgradeLaunchDarkly7"))
-          .parser(JavaParser.fromJavaVersion().classpathFromResources(new InMemoryExecutionContext(), "launchdarkly-java-server-sdk-6"));
+          .parser(JavaParser.fromJavaVersion().classpathFromResources(new InMemoryExecutionContext(), "launchdarkly-java-server-sdk-6.+"));
     }
 
     @Nested
@@ -104,11 +104,11 @@ class UpgradeLaunchDarkly7Test implements RewriteTest {
                   plugins {
                     id "java"
                   }
-                  
+
                   repositories {
                     mavenCentral()
                   }
-                  
+
                   dependencies {
                     implementation "com.launchdarkly:launchdarkly-java-server-sdk:6.3.0"
                   }
@@ -120,11 +120,11 @@ class UpgradeLaunchDarkly7Test implements RewriteTest {
                         plugins {
                           id "java"
                         }
-                        
+
                         repositories {
                           mavenCentral()
                         }
-                        
+
                         dependencies {
                           implementation "com.launchdarkly:launchdarkly-java-server-sdk:%s"
                         }

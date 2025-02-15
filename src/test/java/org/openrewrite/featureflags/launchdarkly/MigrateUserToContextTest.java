@@ -29,7 +29,8 @@ class MigrateUserToContextTest implements RewriteTest {
     @Override
     public void defaults(RecipeSpec spec) {
         spec.recipe(new MigrateUserToContext())
-          .parser(JavaParser.fromJavaVersion().classpathFromResources(new InMemoryExecutionContext(), "launchdarkly-java-server-sdk-5"));
+          .parser(JavaParser.fromJavaVersion().classpathFromResources(new InMemoryExecutionContext(),
+            "launchdarkly-java-server-sdk-5.+"));
     }
 
     @Test
@@ -41,7 +42,7 @@ class MigrateUserToContextTest implements RewriteTest {
             """
               import com.launchdarkly.sdk.LDUser;
               import com.launchdarkly.sdk.LDValue;
-                                
+
               class A {
                   void foo() {
                       LDUser user = new LDUser.Builder("user-key-123abc")
@@ -55,7 +56,7 @@ class MigrateUserToContextTest implements RewriteTest {
             """
               import com.launchdarkly.sdk.LDContext;
               import com.launchdarkly.sdk.LDValue;
-                                
+
               class A {
                   void foo() {
                       LDContext user = LDContext.builder("user-key-123abc")
@@ -77,7 +78,7 @@ class MigrateUserToContextTest implements RewriteTest {
           java(
             """
               import com.launchdarkly.sdk.LDUser;
-                                
+
               class A {
                 void foo() {
                   LDUser user = new LDUser("user-key-123abc");
@@ -86,7 +87,7 @@ class MigrateUserToContextTest implements RewriteTest {
               """,
             """
               import com.launchdarkly.sdk.LDContext;
-                                
+
               class A {
                 void foo() {
                   LDContext user = LDContext.create("user-key-123abc");
@@ -105,7 +106,7 @@ class MigrateUserToContextTest implements RewriteTest {
             """
               import com.launchdarkly.sdk.LDUser;
               import com.launchdarkly.sdk.LDValue;
-                                
+
               class A {
                   void foo() {
                       LDUser user = new LDUser.Builder("user-key-123abc")
@@ -119,7 +120,7 @@ class MigrateUserToContextTest implements RewriteTest {
             """
               import com.launchdarkly.sdk.LDContext;
               import com.launchdarkly.sdk.LDValue;
-                                
+
               class A {
                   void foo() {
                       LDContext user = LDContext.builder("user-key-123abc")
