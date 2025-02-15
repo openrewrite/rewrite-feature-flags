@@ -34,7 +34,8 @@ class UpgradeLaunchDarkly6Test implements RewriteTest {
     @Override
     public void defaults(RecipeSpec spec) {
         spec.recipeFromResource("/META-INF/rewrite/launchdarkly-6.yml", "org.openrewrite.featureflags.launchdarkly.UpgradeLaunchDarkly6")
-          .parser(JavaParser.fromJavaVersion().classpathFromResources(new InMemoryExecutionContext(), "launchdarkly-java-server-sdk-5"));
+          .parser(JavaParser.fromJavaVersion().classpathFromResources(new InMemoryExecutionContext(),
+            "launchdarkly-java-server-sdk-5.+"));
     }
 
     @Test
@@ -96,11 +97,11 @@ class UpgradeLaunchDarkly6Test implements RewriteTest {
               plugins {
                 id "java"
               }
-              
+
               repositories {
                 mavenCentral()
               }
-              
+
               dependencies {
                 implementation "com.launchdarkly:launchdarkly-java-server-sdk:5.10.9"
               }
@@ -112,11 +113,11 @@ class UpgradeLaunchDarkly6Test implements RewriteTest {
                     plugins {
                       id "java"
                     }
-                    
+
                     repositories {
                       mavenCentral()
                     }
-                    
+
                     dependencies {
                       implementation "com.launchdarkly:launchdarkly-java-server-sdk:%s"
                     }
