@@ -26,7 +26,7 @@ dependencies {
     testImplementation("io.getunleash:unleash-client-java:latest.release")
     testImplementation("org.ff4j:ff4j-core:2.0.0") // 2.1.x requires Java 21
 
-    testRuntimeOnly("org.gradle:gradle-tooling-api:latest.release")
+    testRuntimeOnly(gradleApi())
 }
 
 recipeDependencies {
