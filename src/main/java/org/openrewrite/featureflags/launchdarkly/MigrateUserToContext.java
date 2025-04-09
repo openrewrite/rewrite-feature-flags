@@ -67,7 +67,7 @@ public class MigrateUserToContext extends Recipe {
                         if (NEW_USER.matches(newClass)) {
                             maybeRemoveImport("com.launchdarkly.sdk.LDUser");
                             maybeAddImport("com.launchdarkly.sdk.LDContext");
-                            doAfterVisit(new ChangeType("com.launchdarkly.sdk.LDUser", "com.launchdarkly.sdk.LDContext", null).getVisitor());
+                            doAfterVisit(new ChangeType("com.launchdarkly.sdk.LDUser", "com.launchdarkly.sdk.LDContext", null, null).getVisitor());
                             return JavaTemplate.builder("LDContext.create(#{any(java.lang.String)})")
                                     .contextSensitive()
                                     .javaParser(JavaParser.fromJavaVersion().classpathFromResources(ctx, "launchdarkly-java-server-sdk-6.+"))
@@ -77,7 +77,7 @@ public class MigrateUserToContext extends Recipe {
                         } else if (NEW_USER_BUILDER.matches(newClass)) {
                             maybeRemoveImport("com.launchdarkly.sdk.LDUser");
                             maybeAddImport("com.launchdarkly.sdk.LDContext");
-                            doAfterVisit(new ChangeType("com.launchdarkly.sdk.LDUser", "com.launchdarkly.sdk.LDContext", null).getVisitor());
+                            doAfterVisit(new ChangeType("com.launchdarkly.sdk.LDUser", "com.launchdarkly.sdk.LDContext", null, null).getVisitor());
                             return JavaTemplate.builder("LDContext.builder(#{any(java.lang.String)})")
                                     .contextSensitive()
                                     .javaParser(JavaParser.fromJavaVersion().classpathFromResources(ctx, "launchdarkly-java-server-sdk-6.+"))
