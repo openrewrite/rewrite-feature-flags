@@ -330,7 +330,8 @@ class RemoveBoolVariationTest implements RewriteTest {
                       }
                   }
               }
-              """)
+              """
+          )
         );
     }
 
