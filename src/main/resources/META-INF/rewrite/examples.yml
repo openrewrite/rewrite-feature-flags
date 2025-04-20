@@ -1,0 +1,523 @@
+---
+type: specs.openrewrite.org/v1beta/example
+recipeName: org.openrewrite.featureflags.RemoveBooleanFlag
+examples:
+- description: ''
+  parameters:
+  - com.acme.bank.CustomLaunchDarklyWrapper featureFlagEnabled(String, boolean)
+  - flag-key-123abc
+  - 'true'
+  sources:
+  - before: |
+      package com.acme.bank;
+
+      public class CustomLaunchDarklyWrapper {
+          public boolean featureFlagEnabled(String key, boolean fallback) {
+              return fallback;
+          }
+      }
+    language: java
+  - before: |
+      import com.acme.bank.CustomLaunchDarklyWrapper;
+      class Foo {
+          private CustomLaunchDarklyWrapper wrapper = new CustomLaunchDarklyWrapper();
+          void bar() {
+              boolean enabled = wrapper.featureFlagEnabled("flag-key-123abc", false);
+              if (enabled) {
+                  // Application code to show the feature
+                  System.out.println("Feature is on");
+              }
+              else {
+                // The code to run if the feature is off
+                  System.out.println("Feature is off");
+              }
+          }
+      }
+    after: |
+      class Foo {
+          void bar() {
+              // Application code to show the feature
+              System.out.println("Feature is on");
+          }
+      }
+    language: java
+---
+type: specs.openrewrite.org/v1beta/example
+recipeName: org.openrewrite.featureflags.RemoveStringFlag
+examples:
+- description: ''
+  parameters:
+  - com.acme.bank.InHouseFF getStringFeatureFlagValue(String, String)
+  - flag-key-123abc
+  - topic-456
+  sources:
+  - before: |
+      import com.acme.bank.InHouseFF;
+      class Foo {
+          private InHouseFF inHouseFF = new InHouseFF();
+          void bar() {
+              String topic = inHouseFF.getStringFeatureFlagValue("flag-key-123abc", "topic-123");
+              System.out.println("Publishing to topic: " + topic);
+          }
+      }
+    after: |
+      class Foo {
+          void bar() {
+              System.out.println("Publishing to topic: " + "topic-456");
+          }
+      }
+    language: java
+---
+type: specs.openrewrite.org/v1beta/example
+recipeName: org.openrewrite.featureflags.ff4j.RemoveCheck
+examples:
+- description: ''
+  parameters:
+  - flag-key-123abc
+  - 'true'
+  sources:
+  - before: |
+      import org.ff4j.FF4j;
+
+      class Test {
+          void bar(FF4j ff4j) {
+              if (ff4j.check("flag-key-123abc")) {
+                  System.out.println("Feature enabled");
+              } else {
+                  System.out.println("Feature disabled");
+              }
+          }
+      }
+    after: |
+      import org.ff4j.FF4j;
+
+      class Test {
+          void bar(FF4j ff4j) {
+              System.out.println("Feature enabled");
+          }
+      }
+    language: java
+---
+type: specs.openrewrite.org/v1beta/example
+recipeName: org.openrewrite.featureflags.launchdarkly.ChangeVariationDefault
+examples:
+- description: ''
+  parameters: &id001
+  - flag-key-123abc
+  - 'true'
+  sources:
+  - before: |
+      import com.launchdarkly.sdk.LDContext;
+      import com.launchdarkly.sdk.server.LDClient;
+      class Foo {
+          private LDClient client = new LDClient("sdk-key-123abc");
+          void bar(LDContext context) {
+              if (client.boolVariation("flag-key-123abc", context, false)) {
+                  System.out.println("Feature is on");
+              }
+          }
+      }
+    after: |
+      import com.launchdarkly.sdk.LDContext;
+      import com.launchdarkly.sdk.server.LDClient;
+      class Foo {
+          private LDClient client = new LDClient("sdk-key-123abc");
+          void bar(LDContext context) {
+              if (client.boolVariation("flag-key-123abc", context, true)) {
+                  System.out.println("Feature is on");
+              }
+          }
+      }
+    language: java
+- description: ''
+  parameters: *id001
+  sources:
+  - before: |
+      import com.launchdarkly.sdk.LDContext;
+      import com.launchdarkly.sdk.server.LDClient;
+      class Foo {
+          private LDClient client = new LDClient("sdk-key-123abc");
+          void bar(LDContext context) {
+              if (client.stringVariation("flag-key-123abc", context, "foo")) {
+                  System.out.println("Feature is on");
+              }
+          }
+      }
+    after: |
+      import com.launchdarkly.sdk.LDContext;
+      import com.launchdarkly.sdk.server.LDClient;
+      class Foo {
+          private LDClient client = new LDClient("sdk-key-123abc");
+          void bar(LDContext context) {
+              if (client.stringVariation("flag-key-123abc", context, "true")) {
+                  System.out.println("Feature is on");
+              }
+          }
+      }
+    language: java
+- description: ''
+  parameters:
+  - flag-key-123abc
+  - '4.56'
+  sources:
+  - before: |
+      import com.launchdarkly.sdk.LDContext;
+      import com.launchdarkly.sdk.server.LDClient;
+      class Foo {
+          private LDClient client = new LDClient("sdk-key-123abc");
+          void bar(LDContext context) {
+              if (client.doubleVariation("flag-key-123abc", context, 1.23)) {
+                  System.out.println("Feature is on");
+              }
+          }
+      }
+    after: |
+      import com.launchdarkly.sdk.LDContext;
+      import com.launchdarkly.sdk.server.LDClient;
+      class Foo {
+          private LDClient client = new LDClient("sdk-key-123abc");
+          void bar(LDContext context) {
+              if (client.doubleVariation("flag-key-123abc", context, 4.56)) {
+                  System.out.println("Feature is on");
+              }
+          }
+      }
+    language: java
+- description: ''
+  parameters:
+  - flag-key-123abc
+  - '456'
+  sources:
+  - before: |
+      import com.launchdarkly.sdk.LDContext;
+      import com.launchdarkly.sdk.server.LDClient;
+      class Foo {
+          private LDClient client = new LDClient("sdk-key-123abc");
+          void bar(LDContext context) {
+              if (client.intVariation("flag-key-123abc", context, 123)) {
+                  System.out.println("Feature is on");
+              }
+          }
+      }
+    after: |
+      import com.launchdarkly.sdk.LDContext;
+      import com.launchdarkly.sdk.server.LDClient;
+      class Foo {
+          private LDClient client = new LDClient("sdk-key-123abc");
+          void bar(LDContext context) {
+              if (client.intVariation("flag-key-123abc", context, 456)) {
+                  System.out.println("Feature is on");
+              }
+          }
+      }
+    language: java
+---
+type: specs.openrewrite.org/v1beta/example
+recipeName: org.openrewrite.featureflags.launchdarkly.MigrateUserToContext
+examples:
+- description: ''
+  sources:
+  - before: |
+      import com.launchdarkly.sdk.LDUser;
+      import com.launchdarkly.sdk.LDValue;
+
+      class A {
+          void foo() {
+              LDUser user = new LDUser.Builder("user-key-123abc")
+                      .name("Sandy")
+                      .email("sandy@example.com")
+                      .custom("groups", LDValue.buildArray().add("Google").add("Microsoft").build())
+                      .build();
+          }
+      }
+    after: |
+      import com.launchdarkly.sdk.LDContext;
+      import com.launchdarkly.sdk.LDValue;
+
+      class A {
+          void foo() {
+              LDContext user = LDContext.builder("user-key-123abc")
+                      .name("Sandy")
+                      .set("email", "sandy@example.com")
+                      .set("groups", LDValue.buildArray().add("Google").add("Microsoft").build())
+                      .build();
+          }
+      }
+    language: java
+---
+type: specs.openrewrite.org/v1beta/example
+recipeName: org.openrewrite.featureflags.launchdarkly.RemoveBoolVariation
+examples:
+- description: ''
+  parameters:
+  - flag-key-123abc
+  - 'true'
+  sources:
+  - before: |
+      import com.launchdarkly.sdk.LDContext;
+      import com.launchdarkly.sdk.server.LDClient;
+      class Foo {
+          private LDClient client = new LDClient("sdk-key-123abc");
+          void bar() {
+              LDContext context = null;
+              if (client.boolVariation("flag-key-123abc", context, false)) {
+                  // Application code to show the feature
+                  System.out.println("Feature is on");
+              }
+              else {
+                // The code to run if the feature is off
+                  System.out.println("Feature is off");
+              }
+          }
+      }
+    after: |
+      class Foo {
+          void bar() {
+              // Application code to show the feature
+              System.out.println("Feature is on");
+          }
+      }
+    language: java
+---
+type: specs.openrewrite.org/v1beta/example
+recipeName: org.openrewrite.featureflags.launchdarkly.RemoveStringVariation
+examples:
+- description: ''
+  parameters:
+  - flag-key-123abc
+  - topic-456
+  sources:
+  - before: |
+      import com.launchdarkly.sdk.LDContext;
+      import com.launchdarkly.sdk.server.LDClient;
+      class Foo {
+          private LDClient client = new LDClient("sdk-key-123abc");
+          void bar() {
+              LDContext context = null;
+              String topic = client.stringVariation("flag-key-123abc", context, "topic-123");
+              System.out.println("Publishing to topic: " + topic);
+          }
+      }
+    after: |
+      class Foo {
+          void bar() {
+              System.out.println("Publishing to topic: " + "topic-456");
+          }
+      }
+    language: java
+---
+type: specs.openrewrite.org/v1beta/example
+recipeName: org.openrewrite.featureflags.launchdarkly.UpgradeLaunchDarkly6
+examples:
+- description: Maven
+  sources:
+  - before: |
+      <?xml version="1.0" encoding="UTF-8"?>
+      <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+        <modelVersion>4.0.0</modelVersion>
+        <groupId>com.example</groupId>
+        <artifactId>demo</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <dependencies>
+          <dependency>
+            <groupId>com.launchdarkly</groupId>
+            <artifactId>launchdarkly-java-server-sdk</artifactId>
+            <version>5.10.9</version>
+          </dependency>
+        </dependencies>
+      </project>
+    path: pom.xml
+    language: xml
+- description: Gradle
+  sources:
+  - before: |
+      plugins {
+        id "java"
+      }
+
+      repositories {
+        mavenCentral()
+      }
+
+      dependencies {
+        implementation "com.launchdarkly:launchdarkly-java-server-sdk:5.10.9"
+      }
+    path: build.gradle
+    language: groovy
+---
+type: specs.openrewrite.org/v1beta/example
+recipeName: org.openrewrite.featureflags.launchdarkly.UpgradeLaunchDarkly7
+examples:
+- description: Maven
+  sources:
+  - before: |
+      <?xml version="1.0" encoding="UTF-8"?>
+      <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+        <modelVersion>4.0.0</modelVersion>
+        <groupId>com.example</groupId>
+        <artifactId>demo</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <dependencies>
+          <dependency>
+            <groupId>com.launchdarkly</groupId>
+            <artifactId>launchdarkly-java-server-sdk</artifactId>
+            <version>6.3.0</version>
+          </dependency>
+        </dependencies>
+      </project>
+    path: pom.xml
+    language: xml
+- description: Gradle
+  sources:
+  - before: |
+      plugins {
+        id "java"
+      }
+
+      repositories {
+        mavenCentral()
+      }
+
+      dependencies {
+        implementation "com.launchdarkly:launchdarkly-java-server-sdk:6.3.0"
+      }
+    path: build.gradle
+    language: groovy
+---
+type: specs.openrewrite.org/v1beta/example
+recipeName: org.openrewrite.featureflags.launchdarkly.search.FindFeatureFlag
+examples:
+- description: ''
+  parameters:
+  - 'null'
+  - 'null'
+  sources:
+  - before: |
+      import com.launchdarkly.sdk.LDUser;
+      import com.launchdarkly.sdk.server.LDClient;
+
+      class Test {
+          public void a(LDClient client, LDUser user) {
+              boolean flagValue = client.boolVariation("flag-key-123abc", user, false);
+              if (flagValue) {
+                  // Application code to show the feature
+              } else {
+                  // The code to run if the feature is off
+              }
+          }
+      }
+    after: |
+      import com.launchdarkly.sdk.LDUser;
+      import com.launchdarkly.sdk.server.LDClient;
+
+      class Test {
+          public void a(LDClient client, LDUser user) {
+              boolean flagValue = /*~~>*/client.boolVariation("flag-key-123abc", user, false);
+              if (flagValue) {
+                  // Application code to show the feature
+              } else {
+                  // The code to run if the feature is off
+              }
+          }
+      }
+    language: java
+---
+type: specs.openrewrite.org/v1beta/example
+recipeName: org.openrewrite.featureflags.openfeature.RemoveGetBooleanValue
+examples:
+- description: ''
+  parameters:
+  - flag-key-123abc
+  - 'true'
+  sources:
+  - before: |
+      import dev.openfeature.sdk.Client;
+
+      class Foo {
+          void bar(Client client) {
+              if (client.getBooleanValue("flag-key-123abc", false)) {
+                  System.out.println("Feature enabled");
+              } else {
+                  System.out.println("Feature disabled");
+              }
+          }
+      }
+    after: |
+      import dev.openfeature.sdk.Client;
+
+      class Foo {
+          void bar(Client client) {
+              System.out.println("Feature enabled");
+          }
+      }
+    language: java
+---
+type: specs.openrewrite.org/v1beta/example
+recipeName: org.openrewrite.featureflags.search.FindFeatureFlag
+examples:
+- description: ''
+  parameters:
+  - com.acme.FeatureFlag isEnabled(String)
+  - 'null'
+  sources:
+  - before: |
+      import com.acme.FeatureFlag;
+
+      class Test {
+          public void a() {
+              FeatureFlag client = new FeatureFlag();
+              boolean flagValue = client.isEnabled("flag-key-123abc");
+              if (flagValue) {
+                  // Application code to show the feature
+              } else {
+                  // The code to run if the feature is off
+              }
+          }
+      }
+    after: |
+      import com.acme.FeatureFlag;
+
+      class Test {
+          public void a() {
+              FeatureFlag client = new FeatureFlag();
+              boolean flagValue = /*~~>*/client.isEnabled("flag-key-123abc");
+              if (flagValue) {
+                  // Application code to show the feature
+              } else {
+                  // The code to run if the feature is off
+              }
+          }
+      }
+    language: java
+---
+type: specs.openrewrite.org/v1beta/example
+recipeName: org.openrewrite.featureflags.unleash.RemoveIsEnabled
+examples:
+- description: ''
+  parameters:
+  - flag-key-123abc
+  - 'true'
+  sources:
+  - before: |
+      import io.getunleash.Unleash;
+
+      class Test {
+          void bar(Unleash unleash) {
+              if (unleash.isEnabled("flag-key-123abc")) {
+                  System.out.println("Feature enabled");
+              } else {
+                  System.out.println("Feature disabled");
+              }
+          }
+      }
+    after: |
+      import io.getunleash.Unleash;
+
+      class Test {
+          void bar(Unleash unleash) {
+              System.out.println("Feature enabled");
+          }
+      }
+    language: java
