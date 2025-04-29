@@ -1,4 +1,3 @@
-#
 # Copyright 2025 the original author or authors.
 # <p>
 # Licensed under the Moderne Source Available License (the "License");
@@ -12,8 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-
 ---
 type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.featureflags.RemoveBooleanFlag
@@ -118,7 +115,7 @@ type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.featureflags.launchdarkly.ChangeVariationDefault
 examples:
 - description: ''
-  parameters: &id001
+  parameters:
   - flag-key-123abc
   - 'true'
   sources:
@@ -140,88 +137,6 @@ examples:
           private LDClient client = new LDClient("sdk-key-123abc");
           void bar(LDContext context) {
               if (client.boolVariation("flag-key-123abc", context, true)) {
-                  System.out.println("Feature is on");
-              }
-          }
-      }
-    language: java
-- description: ''
-  parameters: *id001
-  sources:
-  - before: |
-      import com.launchdarkly.sdk.LDContext;
-      import com.launchdarkly.sdk.server.LDClient;
-      class Foo {
-          private LDClient client = new LDClient("sdk-key-123abc");
-          void bar(LDContext context) {
-              if (client.stringVariation("flag-key-123abc", context, "foo")) {
-                  System.out.println("Feature is on");
-              }
-          }
-      }
-    after: |
-      import com.launchdarkly.sdk.LDContext;
-      import com.launchdarkly.sdk.server.LDClient;
-      class Foo {
-          private LDClient client = new LDClient("sdk-key-123abc");
-          void bar(LDContext context) {
-              if (client.stringVariation("flag-key-123abc", context, "true")) {
-                  System.out.println("Feature is on");
-              }
-          }
-      }
-    language: java
-- description: ''
-  parameters:
-  - flag-key-123abc
-  - '4.56'
-  sources:
-  - before: |
-      import com.launchdarkly.sdk.LDContext;
-      import com.launchdarkly.sdk.server.LDClient;
-      class Foo {
-          private LDClient client = new LDClient("sdk-key-123abc");
-          void bar(LDContext context) {
-              if (client.doubleVariation("flag-key-123abc", context, 1.23)) {
-                  System.out.println("Feature is on");
-              }
-          }
-      }
-    after: |
-      import com.launchdarkly.sdk.LDContext;
-      import com.launchdarkly.sdk.server.LDClient;
-      class Foo {
-          private LDClient client = new LDClient("sdk-key-123abc");
-          void bar(LDContext context) {
-              if (client.doubleVariation("flag-key-123abc", context, 4.56)) {
-                  System.out.println("Feature is on");
-              }
-          }
-      }
-    language: java
-- description: ''
-  parameters:
-  - flag-key-123abc
-  - '456'
-  sources:
-  - before: |
-      import com.launchdarkly.sdk.LDContext;
-      import com.launchdarkly.sdk.server.LDClient;
-      class Foo {
-          private LDClient client = new LDClient("sdk-key-123abc");
-          void bar(LDContext context) {
-              if (client.intVariation("flag-key-123abc", context, 123)) {
-                  System.out.println("Feature is on");
-              }
-          }
-      }
-    after: |
-      import com.launchdarkly.sdk.LDContext;
-      import com.launchdarkly.sdk.server.LDClient;
-      class Foo {
-          private LDClient client = new LDClient("sdk-key-123abc");
-          void bar(LDContext context) {
-              if (client.intVariation("flag-key-123abc", context, 456)) {
                   System.out.println("Feature is on");
               }
           }

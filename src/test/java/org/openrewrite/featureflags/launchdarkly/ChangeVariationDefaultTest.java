@@ -168,7 +168,6 @@ class ChangeVariationDefaultTest implements RewriteTest {
     @Nested
     class StringVariation {
         @Test
-        @DocumentExample
         void changeDefaultValueToTrue() {
             rewriteRun(
               // language=java
@@ -226,7 +225,6 @@ class ChangeVariationDefaultTest implements RewriteTest {
     @Nested
     class DoubleVariation {
         @Test
-        @DocumentExample
         void changeDefaultValueTo456() {
             rewriteRun(
               spec -> spec.recipe(new ChangeVariationDefault("flag-key-123abc", "4.56")),
@@ -264,7 +262,6 @@ class ChangeVariationDefaultTest implements RewriteTest {
     @Nested
     class IntVariation {
         @Test
-        @DocumentExample
         void changeDefaultValueTo456() {
             rewriteRun(
               spec -> spec.recipe(new ChangeVariationDefault("flag-key-123abc", "456")),
