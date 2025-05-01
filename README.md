@@ -23,10 +23,14 @@
 
 ### What is this?
 
-This project implements a [Rewrite module](https://github.com/openrewrite/rewrite) that performs common tasks related to feature flags, or migrating to new versions of LaunchDarkly.  
+This project implements a [Rewrite module](https://github.com/openrewrite/rewrite) that performs common tasks related to feature flags, or migrating to new versions of LaunchDarkly.
 
 Browse [a selection of recipes available through this module in the recipe catalog](https://docs.openrewrite.org/recipes/featureflags).
 
 ## Contributing
 
 We appreciate all types of contributions. See the [contributing guide](https://github.com/openrewrite/.github/blob/main/CONTRIBUTING.md) for detailed instructions on how to get started.
+
+### Licensing
+
+For more information about licensing, please visit our [licensing page](https://docs.openrewrite.org/licensing/openrewrite-licensing).
