@@ -22,15 +22,6 @@ examples:
   - 'true'
   sources:
   - before: |
-      package com.acme.bank;
-
-      public class CustomLaunchDarklyWrapper {
-          public boolean featureFlagEnabled(String key, boolean fallback) {
-              return fallback;
-          }
-      }
-    language: java
-  - before: |
       import com.acme.bank.CustomLaunchDarklyWrapper;
       class Foo {
           private CustomLaunchDarklyWrapper wrapper = new CustomLaunchDarklyWrapper();
@@ -51,6 +42,15 @@ examples:
           void bar() {
               // Application code to show the feature
               System.out.println("Feature is on");
+          }
+      }
+    language: java
+  - before: |
+      package com.acme.bank;
+
+      public class CustomLaunchDarklyWrapper {
+          public boolean featureFlagEnabled(String key, boolean fallback) {
+              return fallback;
           }
       }
     language: java
