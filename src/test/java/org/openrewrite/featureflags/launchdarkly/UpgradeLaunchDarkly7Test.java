@@ -95,7 +95,6 @@ class UpgradeLaunchDarkly7Test implements RewriteTest {
         }
 
         @Test
-        @DocumentExample("Gradle")
         void gradleDependency() {
             rewriteRun(
               spec -> spec.beforeRecipe(withToolingApi()),
