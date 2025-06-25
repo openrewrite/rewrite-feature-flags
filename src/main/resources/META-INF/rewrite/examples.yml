@@ -260,22 +260,6 @@ examples:
       </project>
     path: pom.xml
     language: xml
-- description: Gradle
-  sources:
-  - before: |
-      plugins {
-        id "java"
-      }
-
-      repositories {
-        mavenCentral()
-      }
-
-      dependencies {
-        implementation "com.launchdarkly:launchdarkly-java-server-sdk:5.10.9"
-      }
-    path: build.gradle
-    language: groovy
 ---
 type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.featureflags.launchdarkly.UpgradeLaunchDarkly7
@@ -300,22 +284,6 @@ examples:
       </project>
     path: pom.xml
     language: xml
-- description: Gradle
-  sources:
-  - before: |
-      plugins {
-        id "java"
-      }
-
-      repositories {
-        mavenCentral()
-      }
-
-      dependencies {
-        implementation "com.launchdarkly:launchdarkly-java-server-sdk:6.3.0"
-      }
-    path: build.gradle
-    language: groovy
 ---
 type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.featureflags.launchdarkly.search.FindFeatureFlag
