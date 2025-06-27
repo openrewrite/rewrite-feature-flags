@@ -20,7 +20,7 @@ dependencies {
     testImplementation("org.openrewrite.gradle.tooling:model:$rewriteVersion")
     testImplementation("org.openrewrite:rewrite-maven")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:latest.release")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.+")
 
     testImplementation("dev.openfeature:sdk:latest.release")
     testImplementation("io.getunleash:unleash-client-java:latest.release")
