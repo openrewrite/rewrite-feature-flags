@@ -69,7 +69,7 @@ class UpgradeLaunchDarkly7Test implements RewriteTest {
                   </project>
                   """,
                 spec -> spec.after(actual -> {
-                      Matcher matcher = Pattern.compile("<version>(7\\.\\d\\.\\d+)</version>").matcher(actual);
+                      Matcher matcher = Pattern.compile("<version>(7[.][0-9]+[.][0-9])</version>").matcher(actual);
                       assertTrue(matcher.find(), actual);
                       return """
                         <?xml version="1.0" encoding="UTF-8"?>
@@ -113,7 +113,7 @@ class UpgradeLaunchDarkly7Test implements RewriteTest {
                   }
                   """,
                 spec -> spec.after(actual -> {
-                    Matcher matcher = Pattern.compile("com\\.launchdarkly:launchdarkly-java-server-sdk:(7\\.\\d+\\.\\d+)").matcher(actual);
+                    Matcher matcher = Pattern.compile("com\\.launchdarkly:launchdarkly-java-server-sdk:(7[.][0-9]+[.][0-9])").matcher(actual);
                     assertTrue(matcher.find(), actual);
                     return """
                         plugins {
