@@ -34,8 +34,8 @@ class RemoveBoolVariationTest implements RewriteTest {
             .classpathFromResources(new InMemoryExecutionContext(), "launchdarkly-java-server-sdk-6.+"));
     }
 
-    @Test
     @DocumentExample
+    @Test
     void enablePermanently() {
         rewriteRun(
           // language=java

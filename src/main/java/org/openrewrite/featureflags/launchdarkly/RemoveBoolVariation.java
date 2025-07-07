@@ -24,8 +24,8 @@ import org.openrewrite.featureflags.RemoveBooleanFlag;
 import java.util.Collections;
 import java.util.List;
 
-@Value
 @EqualsAndHashCode(callSuper = false)
+@Value
 public class RemoveBoolVariation extends Recipe {
 
     @Override

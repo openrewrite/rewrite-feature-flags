@@ -33,8 +33,8 @@ class RemoveStringVariationTest implements RewriteTest {
             .classpathFromResources(new InMemoryExecutionContext(), "launchdarkly-java-server-sdk-6.+"));
     }
 
-    @Test
     @DocumentExample
+    @Test
     void replaceStringVariation() {
         rewriteRun(
           // language=java

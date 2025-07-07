@@ -24,8 +24,8 @@ import org.openrewrite.Recipe;
 import java.util.Collections;
 import java.util.List;
 
-@Value
 @EqualsAndHashCode(callSuper = false)
+@Value
 public class FindFeatureFlag extends Recipe {
 
     @Option(displayName = "Feature key",

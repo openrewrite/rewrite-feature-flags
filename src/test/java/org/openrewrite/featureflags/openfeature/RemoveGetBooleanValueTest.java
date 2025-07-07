@@ -31,8 +31,8 @@ class RemoveGetBooleanValueTest implements RewriteTest {
           .parser(JavaParser.fromJavaVersion().classpath("sdk"));
     }
 
-    @Test
     @DocumentExample
+    @Test
     void removeGetBooleanValue() {
         rewriteRun(
           //language=java

@@ -33,8 +33,8 @@ class MigrateUserToContextTest implements RewriteTest {
             "launchdarkly-java-server-sdk-5.+"));
     }
 
-    @Test
     @DocumentExample
+    @Test
     void builderUserToContext() {
         rewriteRun(
           //language=java

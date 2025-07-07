@@ -32,8 +32,8 @@ import org.openrewrite.java.tree.Expression;
 import org.openrewrite.java.tree.J;
 import org.openrewrite.marker.SearchResult;
 
-@Value
 @EqualsAndHashCode(callSuper = false)
+@Value
 public class FindFeatureFlag extends Recipe {
     @Option(displayName = "Flag type",
             description = "The feature flag's type.",

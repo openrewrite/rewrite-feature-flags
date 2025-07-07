@@ -34,8 +34,8 @@ import org.openrewrite.staticanalysis.RemoveUnusedLocalVariables;
 import org.openrewrite.staticanalysis.RemoveUnusedPrivateFields;
 import org.openrewrite.staticanalysis.SimplifyConstantIfBranchExecution;
 
-@Value
 @EqualsAndHashCode(callSuper = false)
+@Value
 public class RemoveStringFlag extends Recipe {
 
     @Override

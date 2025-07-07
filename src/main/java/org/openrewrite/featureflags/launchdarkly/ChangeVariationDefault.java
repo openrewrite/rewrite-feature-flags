@@ -30,8 +30,8 @@ import org.openrewrite.java.tree.JavaType;
 import org.openrewrite.java.tree.Space;
 import org.openrewrite.marker.Markers;
 
-@Value
 @EqualsAndHashCode(callSuper = false)
+@Value
 public class ChangeVariationDefault extends Recipe {
     @Override
     public String getDisplayName() {

@@ -24,8 +24,8 @@ import org.openrewrite.featureflags.RemoveStringFlag;
 import java.util.Collections;
 import java.util.List;
 
-@Value
 @EqualsAndHashCode(callSuper = false)
+@Value
 public class RemoveStringVariation extends Recipe {
 
     @Override

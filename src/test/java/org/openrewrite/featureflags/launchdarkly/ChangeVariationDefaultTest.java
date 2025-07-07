@@ -35,8 +35,8 @@ class ChangeVariationDefaultTest implements RewriteTest {
 
     @Nested
     class BooleanVariation {
-        @Test
         @DocumentExample
+        @Test
         void changeDefaultValueToTrue() {
             rewriteRun(
               // language=java

@@ -41,8 +41,8 @@ class FindFeatureFlagTest implements RewriteTest {
         );
     }
 
-    @Test
     @DocumentExample
+    @Test
     void findFeatureFlagWithAnyKey() {
         rewriteRun(
           spec -> spec.recipe(new FindFeatureFlag("com.acme.FeatureFlag isEnabled(String)", null)),

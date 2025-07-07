@@ -31,8 +31,8 @@ class FindFeatureFlagTest implements RewriteTest {
           "launchdarkly-java-server-sdk-5.+"));
     }
 
-    @Test
     @DocumentExample
+    @Test
     void findFeatureFlag() {
         rewriteRun(
           spec -> spec.recipe(new FindFeatureFlag(null, null)),

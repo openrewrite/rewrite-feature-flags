@@ -31,8 +31,8 @@ class RemoveIsEnabledTest implements RewriteTest {
           .parser(JavaParser.fromJavaVersion().classpath("unleash-client-java"));
     }
 
-    @Test
     @DocumentExample
+    @Test
     void removeIsEnabled() {
         rewriteRun(
           //language=java

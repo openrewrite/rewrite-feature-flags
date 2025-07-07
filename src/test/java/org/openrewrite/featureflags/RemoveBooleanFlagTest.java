@@ -25,8 +25,8 @@ import static org.openrewrite.java.Assertions.java;
 
 class RemoveBooleanFlagTest implements RewriteTest {
 
-    @Test
     @DocumentExample
+    @Test
     void customMethodPatternForWrapper() {
         rewriteRun(
           spec -> spec.recipe(new RemoveBooleanFlag("com.acme.bank.CustomLaunchDarklyWrapper featureFlagEnabled(String, boolean)", "flag-key-123abc", true)),
@@ -74,8 +74,8 @@ class RemoveBooleanFlagTest implements RewriteTest {
         );
     }
 
-    @Test
     @Issue("https://github.com/openrewrite/rewrite-feature-flags/issues/23")
+    @Test
     void customMethodPatternNoConstants() {
         // language=java
         rewriteRun(

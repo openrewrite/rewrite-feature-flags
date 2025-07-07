@@ -31,8 +31,8 @@ class RemoveCheckTest implements RewriteTest {
           .parser(JavaParser.fromJavaVersion().classpath("ff4j-core"));
     }
 
-    @Test
     @DocumentExample
+    @Test
     void removeCheck() {
         rewriteRun(
           //language=java

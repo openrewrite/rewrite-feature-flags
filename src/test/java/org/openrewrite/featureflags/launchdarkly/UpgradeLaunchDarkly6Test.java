@@ -38,8 +38,8 @@ class UpgradeLaunchDarkly6Test implements RewriteTest {
             "launchdarkly-java-server-sdk-5.+"));
     }
 
-    @Test
     @DocumentExample("Maven")
+    @Test
     void mavenDependency() {
         rewriteRun(
           //language=xml

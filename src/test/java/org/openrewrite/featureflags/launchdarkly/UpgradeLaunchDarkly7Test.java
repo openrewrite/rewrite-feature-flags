@@ -45,8 +45,8 @@ class UpgradeLaunchDarkly7Test implements RewriteTest {
 
     @Nested
     class Dependencies {
-        @Test
         @DocumentExample("Maven")
+        @Test
         void mavenDependency() {
             rewriteRun(
               //language=xml
