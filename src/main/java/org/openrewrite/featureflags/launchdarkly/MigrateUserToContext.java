@@ -74,7 +74,8 @@ public class MigrateUserToContext extends Recipe {
                                     .imports("com.launchdarkly.sdk.LDContext")
                                     .build()
                                     .apply(getCursor(), newClass.getCoordinates().replace(), newClass.getArguments().get(0));
-                        } else if (NEW_USER_BUILDER.matches(newClass)) {
+                        }
+                        if (NEW_USER_BUILDER.matches(newClass)) {
                             maybeRemoveImport("com.launchdarkly.sdk.LDUser");
                             maybeAddImport("com.launchdarkly.sdk.LDContext");
                             doAfterVisit(new ChangeType("com.launchdarkly.sdk.LDUser", "com.launchdarkly.sdk.LDContext", null).getVisitor());
@@ -111,7 +112,8 @@ public class MigrateUserToContext extends Recipe {
                                             new J.Literal(Tree.randomId(), Space.EMPTY, Markers.EMPTY, m.getSimpleName(), "\"" + m.getSimpleName() + "\"", null, JavaType.Primitive.String),
                                             m.getArguments().get(0)
                                     );
-                        } else if (BUILTIN_PRIVATE_ATTRIBUTE.matches(m) && PRIVATE_ATTRIBUTES.contains(m.getSimpleName())) {
+                        }
+                        if (BUILTIN_PRIVATE_ATTRIBUTE.matches(m) && PRIVATE_ATTRIBUTES.contains(m.getSimpleName())) {
                             doAfterVisit(new UseVarargsForPrivateAttributes());
 
                             String code;
@@ -134,7 +136,8 @@ public class MigrateUserToContext extends Recipe {
                                             m.getArguments().get(0),
                                             new J.Literal(Tree.randomId(), Space.EMPTY, Markers.EMPTY, attributeName, "\"" + attributeName + "\"", null, JavaType.Primitive.String)
                                     );
-                        } else if (CUSTOM_ATTRIBUTES.matches(m)) {
+                        }
+                        if (CUSTOM_ATTRIBUTES.matches(m)) {
                             String code;
                             if (requireNonNull(m.getPadding().getSelect()).getAfter().getWhitespace().contains("\n")) {
                                 code = "#{any(com.launchdarkly.sdk.ContextBuilder)}\n.set(#{any(java.lang.String)}, #{any()})";
@@ -147,7 +150,8 @@ public class MigrateUserToContext extends Recipe {
                                     .imports("com.launchdarkly.sdk.ContextBuilder")
                                     .build()
                                     .apply(getCursor(), m.getCoordinates().replace(), m.getSelect(), m.getArguments().get(0), m.getArguments().get(1));
-                        } else if (PRIVATE_CUSTOM_ATTRIBUTES.matches(m)) {
+                        }
+                        if (PRIVATE_CUSTOM_ATTRIBUTES.matches(m)) {
                             doAfterVisit(new UseVarargsForPrivateAttributes());
 
                             String code;
