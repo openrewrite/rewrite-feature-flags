@@ -21,8 +21,9 @@ import org.jspecify.annotations.Nullable;
 import org.openrewrite.Option;
 import org.openrewrite.Recipe;
 
-import java.util.Collections;
 import java.util.List;
+
+import static java.util.Collections.singletonList;
 
 @EqualsAndHashCode(callSuper = false)
 @Value
@@ -47,7 +48,7 @@ public class FindFeatureFlag extends Recipe {
 
     @Override
     public List<Recipe> getRecipeList() {
-        return Collections.singletonList(new org.openrewrite.featureflags.search.FindFeatureFlag(
+        return singletonList(new org.openrewrite.featureflags.search.FindFeatureFlag(
                 "io.getunleash.Unleash isEnabled(String, ..)", featureKey));
     }
 }

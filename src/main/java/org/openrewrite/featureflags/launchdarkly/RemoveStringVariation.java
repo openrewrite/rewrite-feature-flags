@@ -21,8 +21,9 @@ import org.openrewrite.Option;
 import org.openrewrite.Recipe;
 import org.openrewrite.featureflags.RemoveStringFlag;
 
-import java.util.Collections;
 import java.util.List;
+
+import static java.util.Collections.singletonList;
 
 @EqualsAndHashCode(callSuper = false)
 @Value
@@ -50,7 +51,7 @@ public class RemoveStringVariation extends Recipe {
 
     @Override
     public List<Recipe> getRecipeList() {
-        return Collections.singletonList(new RemoveStringFlag(
+        return singletonList(new RemoveStringFlag(
                 "com.launchdarkly.sdk.server.LDClient stringVariation(String, com.launchdarkly.sdk.*, String)",
                 featureKey, replacementValue));
     }

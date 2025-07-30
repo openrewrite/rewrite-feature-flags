@@ -21,8 +21,9 @@ import org.openrewrite.Option;
 import org.openrewrite.Recipe;
 import org.openrewrite.featureflags.RemoveBooleanFlag;
 
-import java.util.Collections;
 import java.util.List;
+
+import static java.util.Collections.singletonList;
 
 @EqualsAndHashCode(callSuper = false)
 @Value
@@ -50,7 +51,7 @@ public class RemoveIsEnabled extends Recipe {
 
     @Override
     public List<Recipe> getRecipeList() {
-        return Collections.singletonList(new RemoveBooleanFlag(
+        return singletonList(new RemoveBooleanFlag(
                 "io.getunleash.Unleash isEnabled(String, ..)",
                 featureKey, replacementValue));
     }

@@ -29,9 +29,10 @@ import org.openrewrite.marker.Markers;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.reverse;
 import static java.util.Objects.requireNonNull;
 
 @EqualsAndHashCode(callSuper = false)
@@ -215,7 +216,7 @@ public class MigrateUserToContext extends Recipe {
                 select = m.getSelect();
             }
             if (privateAttributesInvocations <= 1) {
-                return Collections.emptyList();
+                return emptyList();
             }
             for (int i = 1; i < attributes.size(); i++) {
                 attributes.set(i, attributes.get(i).withPrefix(Space.SINGLE_SPACE));
@@ -228,7 +229,7 @@ public class MigrateUserToContext extends Recipe {
             if (chain.isEmpty()) {
                 return build;
             }
-            Collections.reverse(chain);
+            reverse(chain);
 
             J.MethodInvocation select = chain.get(0);
             for (int i = 1; i < chain.size(); i++) {
