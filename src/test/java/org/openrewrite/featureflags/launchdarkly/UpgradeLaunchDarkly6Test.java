@@ -25,7 +25,7 @@ import org.openrewrite.test.RewriteTest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.openrewrite.gradle.Assertions.buildGradle;
 import static org.openrewrite.gradle.toolingapi.Assertions.withToolingApi;
 import static org.openrewrite.maven.Assertions.pomXml;
@@ -63,7 +63,7 @@ class UpgradeLaunchDarkly6Test implements RewriteTest {
               """,
             spec -> spec.after(actual -> {
                   Matcher matcher = Pattern.compile("<version>(6\\.\\d\\.\\d+)</version>").matcher(actual);
-                  assertTrue(matcher.find(), actual);
+                assertThat(matcher.find()).as(actual).isTrue();
                   return """
                     <?xml version="1.0" encoding="UTF-8"?>
                     <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -107,7 +107,7 @@ class UpgradeLaunchDarkly6Test implements RewriteTest {
               """,
             spec -> spec.after(actual -> {
                   Matcher matcher = Pattern.compile("com\\.launchdarkly:launchdarkly-java-server-sdk:(6\\.\\d+\\.\\d+)").matcher(actual);
-                  assertTrue(matcher.find(), actual);
+                assertThat(matcher.find()).as(actual).isTrue();
                   return """
                     plugins {
                       id "java"
