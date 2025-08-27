@@ -110,7 +110,7 @@ public class RemoveBooleanFlag extends Recipe {
 
             private void cleanUpAfterReplacements() {
                 doAfterVisit(new SimplifyConstantIfBranchExecution().getVisitor());
-                doAfterVisit(Repeat.repeatUntilStable(new RemoveUnusedLocalVariables(null, true).getVisitor(), 3));
+                doAfterVisit(Repeat.repeatUntilStable(new RemoveUnusedLocalVariables(null, null, true).getVisitor(), 3));
                 doAfterVisit(new RemoveUnusedPrivateFields().getVisitor());
             }
 
