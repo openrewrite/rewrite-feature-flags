@@ -27,8 +27,7 @@ import static org.openrewrite.java.Assertions.java;
 class FindFeatureFlagTest implements RewriteTest {
     @Override
     public void defaults(RecipeSpec spec) {
-        spec.parser(JavaParser.fromJavaVersion().classpathFromResources(new InMemoryExecutionContext(),
-          "launchdarkly-java-server-sdk-5.+"));
+        spec.parser(JavaParser.fromJavaVersion().classpath("launchdarkly-java-server-sdk-5.+"));
     }
 
     @DocumentExample
