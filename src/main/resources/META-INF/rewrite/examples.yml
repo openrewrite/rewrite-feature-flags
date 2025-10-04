@@ -15,7 +15,7 @@
 type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.featureflags.RemoveBooleanFlag
 examples:
-- description: ''
+- description: '`RemoveBooleanFlagTest#customMethodPatternForWrapper`'
   parameters:
   - com.acme.bank.CustomLaunchDarklyWrapper featureFlagEnabled(String, boolean)
   - flag-key-123abc
@@ -58,7 +58,7 @@ examples:
 type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.featureflags.RemoveStringFlag
 examples:
-- description: ''
+- description: '`RemoveStringFlagTest#removeStringFeatureFlag`'
   parameters:
   - com.acme.bank.InHouseFF getStringFeatureFlagValue(String, String)
   - flag-key-123abc
@@ -84,7 +84,7 @@ examples:
 type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.featureflags.ff4j.RemoveCheck
 examples:
-- description: ''
+- description: '`RemoveCheckTest#removeCheck`'
   parameters:
   - flag-key-123abc
   - 'true'
@@ -114,7 +114,7 @@ examples:
 type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.featureflags.launchdarkly.ChangeVariationDefault
 examples:
-- description: ''
+- description: '`BooleanVariation#changeDefaultValueToTrue`'
   parameters:
   - flag-key-123abc
   - 'true'
@@ -146,7 +146,7 @@ examples:
 type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.featureflags.launchdarkly.MigrateUserToContext
 examples:
-- description: ''
+- description: '`MigrateUserToContextTest#builderUserToContext`'
   sources:
   - before: |
       import com.launchdarkly.sdk.LDUser;
@@ -179,7 +179,7 @@ examples:
 type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.featureflags.launchdarkly.RemoveBoolVariation
 examples:
-- description: ''
+- description: '`RemoveBoolVariationTest#enablePermanently`'
   parameters:
   - flag-key-123abc
   - 'true'
@@ -213,7 +213,7 @@ examples:
 type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.featureflags.launchdarkly.RemoveStringVariation
 examples:
-- description: ''
+- description: '`RemoveStringVariationTest#replaceStringVariation`'
   parameters:
   - flag-key-123abc
   - topic-456
@@ -288,7 +288,7 @@ examples:
 type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.featureflags.launchdarkly.search.FindFeatureFlag
 examples:
-- description: ''
+- description: '`FindFeatureFlagTest#findFeatureFlag`'
   parameters:
   - 'null'
   - 'null'
@@ -326,7 +326,7 @@ examples:
 type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.featureflags.openfeature.RemoveGetBooleanValue
 examples:
-- description: ''
+- description: '`RemoveGetBooleanValueTest#removeGetBooleanValue`'
   parameters:
   - flag-key-123abc
   - 'true'
@@ -356,7 +356,7 @@ examples:
 type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.featureflags.search.FindFeatureFlag
 examples:
-- description: ''
+- description: '`FindFeatureFlagTest#findFeatureFlagWithAnyKey`'
   parameters:
   - com.acme.FeatureFlag isEnabled(String)
   - 'null'
@@ -394,7 +394,7 @@ examples:
 type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.featureflags.unleash.RemoveIsEnabled
 examples:
-- description: ''
+- description: '`RemoveIsEnabledTest#removeIsEnabled`'
   parameters:
   - flag-key-123abc
   - 'true'
