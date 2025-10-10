@@ -32,6 +32,7 @@ import org.openrewrite.java.tree.Space;
 import org.openrewrite.marker.Markers;
 import org.openrewrite.staticanalysis.RemoveUnusedLocalVariables;
 import org.openrewrite.staticanalysis.RemoveUnusedPrivateFields;
+import org.openrewrite.staticanalysis.RemoveUnusedPrivateMethods;
 import org.openrewrite.staticanalysis.SimplifyConstantIfBranchExecution;
 
 @EqualsAndHashCode(callSuper = false)
@@ -112,6 +113,7 @@ public class RemoveBooleanFlag extends Recipe {
                 doAfterVisit(new SimplifyConstantIfBranchExecution().getVisitor());
                 doAfterVisit(Repeat.repeatUntilStable(new RemoveUnusedLocalVariables(null, null, true).getVisitor(), 3));
                 doAfterVisit(new RemoveUnusedPrivateFields().getVisitor());
+                doAfterVisit(new RemoveUnusedPrivateMethods().getVisitor());
             }
 
             private J.Literal buildLiteral() {

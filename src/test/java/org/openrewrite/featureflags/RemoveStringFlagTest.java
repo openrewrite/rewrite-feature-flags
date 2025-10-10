@@ -98,4 +98,44 @@ class RemoveStringFlagTest implements RewriteTest {
           )
         );
     }
+
+    @Test
+    void removeUnusedPrivateMethodsAfterRemoval() {
+        rewriteRun(
+          spec -> spec.recipe(new RemoveStringFlag("com.acme.bank.InHouseFF getStringFeatureFlagValue(String, String)", "flag-key-123abc", "topic-456")),
+          // language=java
+          java(
+            """
+              import com.acme.bank.InHouseFF;
+              class Foo {
+                  private InHouseFF inHouseFF = new InHouseFF();
+                  void bar() {
+                      String topic = inHouseFF.getStringFeatureFlagValue("flag-key-123abc", "topic-123");
+                      if ("topic-456".equals(inHouseFF.getStringFeatureFlagValue("flag-key-123abc", "topic-123"))) {
+                          handleOn();
+                      } else {
+                          handleOff();
+                      }
+                  }
+                  private void handleOn() {
+                      System.out.println("Feature is on");
+                  }
+                  private void handleOff() {
+                      System.out.println("Feature is off");
+                  }
+              }
+              """,
+            """
+              class Foo {
+                  void bar() {
+                      handleOn();
+                  }
+                  private void handleOn() {
+                      System.out.println("Feature is on");
+                  }
+              }
+              """
+          )
+        );
+    }
 }
