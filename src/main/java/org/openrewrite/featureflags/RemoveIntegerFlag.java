@@ -32,16 +32,15 @@ import org.openrewrite.java.tree.Space;
 import org.openrewrite.marker.Markers;
 import org.openrewrite.staticanalysis.RemoveUnusedLocalVariables;
 import org.openrewrite.staticanalysis.RemoveUnusedPrivateFields;
-import org.openrewrite.staticanalysis.RemoveUnusedPrivateMethods;
 import org.openrewrite.staticanalysis.SimplifyConstantIfBranchExecution;
 
 @EqualsAndHashCode(callSuper = false)
 @Value
-public class RemoveBooleanFlag extends Recipe {
+public class RemoveIntegerFlag extends Recipe {
 
     @Override
     public String getDisplayName() {
-        return "Remove a boolean feature flag for feature key";
+        return "Remove an integer feature flag for feature key";
     }
 
     @Override
@@ -51,7 +50,7 @@ public class RemoveBooleanFlag extends Recipe {
 
     @Option(displayName = "Method pattern",
             description = "A method pattern to match against. The first argument must be the feature key as `String`.",
-            example = "dev.openfeature.sdk.Client getBooleanValue(String, Boolean)")
+            example = "dev.openfeature.sdk.Client getIntegerValue(String, Integer)")
     String methodPattern;
 
     @Option(displayName = "Feature flag key",
@@ -61,8 +60,8 @@ public class RemoveBooleanFlag extends Recipe {
 
     @Option(displayName = "Replacement value",
             description = "The value to replace the feature flag check with.",
-            example = "true")
-    Boolean replacementValue;
+            example = "42")
+    Integer replacementValue;
 
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
@@ -113,11 +112,10 @@ public class RemoveBooleanFlag extends Recipe {
                 doAfterVisit(new SimplifyConstantIfBranchExecution().getVisitor());
                 doAfterVisit(Repeat.repeatUntilStable(new RemoveUnusedLocalVariables(null, null, true).getVisitor(), 3));
                 doAfterVisit(new RemoveUnusedPrivateFields().getVisitor());
-                doAfterVisit(new RemoveUnusedPrivateMethods().getVisitor());
             }
 
             private J.Literal buildLiteral() {
-                return new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, replacementValue, String.valueOf(replacementValue), null, JavaType.Primitive.Boolean);
+                return new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, replacementValue, String.valueOf(replacementValue), null, JavaType.Primitive.Int);
             }
         };
         return Preconditions.check(new UsesMethod<>(methodMatcher), visitor);
