@@ -97,9 +97,9 @@ public class RemoveBooleanFlag extends Recipe {
                 return mi;
             }
 
-            private boolean matches(@Nullable Expression mi) {
-                if (methodMatcher.matches(mi)) {
-                    Expression firstArgument = ((J.MethodInvocation) mi).getArguments().get(0);
+            private boolean matches(@Nullable Expression expression) {
+                if (methodMatcher.matches(expression)) {
+                    Expression firstArgument = ((J.MethodInvocation) expression).getArguments().get(0);
                     return CursorUtil.findCursorForTree(getCursor(), firstArgument)
                             .bind(c -> ConstantFold.findConstantLiteralValue(c, String.class))
                             .map(featureKey::equals)
@@ -117,7 +117,6 @@ public class RemoveBooleanFlag extends Recipe {
             private J.Literal buildLiteral() {
                 return new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, replacementValue, String.valueOf(replacementValue), null, JavaType.Primitive.Boolean);
             }
-
         };
         return Preconditions.check(new UsesMethod<>(methodMatcher), visitor);
     }
