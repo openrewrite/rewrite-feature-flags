@@ -177,7 +177,7 @@ public class MigrateUserToContext extends Recipe {
     private static class UseVarargsForPrivateAttributes extends JavaIsoVisitor<ExecutionContext> {
         private static final MethodMatcher CONTEXT_BUILDER_MATCHER = new MethodMatcher("com.launchdarkly.sdk.ContextBuilder *(..)");
         private static final MethodMatcher PRIVATE_ATTRIBUTES_STRING_VARARGS_MATCHER = new MethodMatcher("com.launchdarkly.sdk.ContextBuilder privateAttributes(java.lang.String...)");
-        private static final MethodMatcher USER_BUILDER_BUILD_MATCHER = new MethodMatcher("com.launchdarkly.sdk.LDUser.Builder build()");
+        private static final MethodMatcher USER_BUILDER_BUILD_MATCHER = new MethodMatcher("com.launchdarkly.sdk.LDContext$Builder build()");
         private static final MethodMatcher CONTEXT_BUILDER_BUILD_MATCHER = new MethodMatcher("com.launchdarkly.sdk.ContextBuilder build()");
 
         @Override
