@@ -171,4 +171,96 @@ class FindFeatureFlagTest implements RewriteTest {
           )
         );
     }
+
+    @Test
+    void findGetStringFlag() {
+        rewriteRun(
+          spec -> spec.recipe(new FindFeatureFlag(null)),
+          //language=java
+          java(
+            """
+              import io.quarkiverse.flags.Flags;
+
+              class Test {
+                  public void a(Flags flags) {
+                      String environment = flags.getString("env-flag");
+                      System.out.println(environment);
+                  }
+              }
+              """,
+            """
+              import io.quarkiverse.flags.Flags;
+
+              class Test {
+                  public void a(Flags flags) {
+                      String environment = /*~~>*/flags.getString("env-flag");
+                      System.out.println(environment);
+                  }
+              }
+              """
+          )
+        );
+    }
+
+    @Test
+    void findGetIntFlag() {
+        rewriteRun(
+          spec -> spec.recipe(new FindFeatureFlag(null)),
+          //language=java
+          java(
+            """
+              import io.quarkiverse.flags.Flags;
+
+              class Test {
+                  public void a(Flags flags) {
+                      int maxRetries = flags.getInt("max-retries");
+                      System.out.println(maxRetries);
+                  }
+              }
+              """,
+            """
+              import io.quarkiverse.flags.Flags;
+
+              class Test {
+                  public void a(Flags flags) {
+                      int maxRetries = /*~~>*/flags.getInt("max-retries");
+                      System.out.println(maxRetries);
+                  }
+              }
+              """
+          )
+        );
+    }
+
+    @Test
+    void findAllFlagTypes() {
+        rewriteRun(
+          spec -> spec.recipe(new FindFeatureFlag(null)),
+          //language=java
+          java(
+            """
+              import io.quarkiverse.flags.Flags;
+
+              class Test {
+                  public void a(Flags flags) {
+                      boolean enabled = flags.isEnabled("feature-enabled");
+                      String env = flags.getString("environment");
+                      int retries = flags.getInt("max-retries");
+                  }
+              }
+              """,
+            """
+              import io.quarkiverse.flags.Flags;
+
+              class Test {
+                  public void a(Flags flags) {
+                      boolean enabled = /*~~>*/flags.isEnabled("feature-enabled");
+                      String env = /*~~>*/flags.getString("environment");
+                      int retries = /*~~>*/flags.getInt("max-retries");
+                  }
+              }
+              """
+          )
+        );
+    }
 }
