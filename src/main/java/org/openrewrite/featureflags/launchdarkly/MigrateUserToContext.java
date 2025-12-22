@@ -38,15 +38,15 @@ import static java.util.Objects.requireNonNull;
 @EqualsAndHashCode(callSuper = false)
 @Value
 public class MigrateUserToContext extends Recipe {
-    private static final MethodMatcher NEW_USER = new MethodMatcher("com.launchdarkly.sdk.LDUser <constructor>(java.lang.String)");
-    private static final MethodMatcher NEW_USER_BUILDER = new MethodMatcher("com.launchdarkly.sdk.LDUser.Builder <constructor>(java.lang.String)");
+    private static final MethodMatcher NEW_USER = new MethodMatcher("com.launchdarkly.sdk.LDUser <constructor>(String)");
+    private static final MethodMatcher NEW_USER_BUILDER = new MethodMatcher("com.launchdarkly.sdk.LDUser.Builder <constructor>(String)");
 
     private static final List<String> BASIC_ATTRIBUTES = Arrays.asList("avatar", "country", "email", "firstName", "ip", "lastName");
     private static final List<String> PRIVATE_ATTRIBUTES = Arrays.asList("privateAvatar", "privateCountry", "privateEmail", "privateFirstName", "privateIp", "privateLastName", "privateName");
-    private static final MethodMatcher BUILTIN_ATTRIBUTE = new MethodMatcher("com.launchdarkly.sdk.LDUser.Builder *(java.lang.String)");
-    private static final MethodMatcher BUILTIN_PRIVATE_ATTRIBUTE = new MethodMatcher("com.launchdarkly.sdk.LDUser.Builder private*(java.lang.String)");
-    private static final MethodMatcher CUSTOM_ATTRIBUTES = new MethodMatcher("com.launchdarkly.sdk.LDUser.Builder custom(java.lang.String, ..)"); // FIXME: This really should be `*`
-    private static final MethodMatcher PRIVATE_CUSTOM_ATTRIBUTES = new MethodMatcher("com.launchdarkly.sdk.LDUser.Builder privateCustom(java.lang.String, ..)"); // FIXME: This really should be `*`
+    private static final MethodMatcher BUILTIN_ATTRIBUTE = new MethodMatcher("com.launchdarkly.sdk.LDUser.Builder *(String)");
+    private static final MethodMatcher BUILTIN_PRIVATE_ATTRIBUTE = new MethodMatcher("com.launchdarkly.sdk.LDUser.Builder private*(String)");
+    private static final MethodMatcher CUSTOM_ATTRIBUTES = new MethodMatcher("com.launchdarkly.sdk.LDUser.Builder custom(String, ..)"); // FIXME: This really should be `*`
+    private static final MethodMatcher PRIVATE_CUSTOM_ATTRIBUTES = new MethodMatcher("com.launchdarkly.sdk.LDUser.Builder privateCustom(String, ..)"); // FIXME: This really should be `*`
 
     @Override
     public String getDisplayName() {
@@ -69,7 +69,7 @@ public class MigrateUserToContext extends Recipe {
                             maybeRemoveImport("com.launchdarkly.sdk.LDUser");
                             maybeAddImport("com.launchdarkly.sdk.LDContext");
                             doAfterVisit(new ChangeType("com.launchdarkly.sdk.LDUser", "com.launchdarkly.sdk.LDContext", null).getVisitor());
-                            return JavaTemplate.builder("LDContext.create(#{any(java.lang.String)})")
+                            return JavaTemplate.builder("LDContext.create(#{any(String)})")
                                     .contextSensitive()
                                     .javaParser(JavaParser.fromJavaVersion().classpathFromResources(ctx, "launchdarkly-java-server-sdk-6.+"))
                                     .imports("com.launchdarkly.sdk.LDContext")
@@ -80,7 +80,7 @@ public class MigrateUserToContext extends Recipe {
                             maybeRemoveImport("com.launchdarkly.sdk.LDUser");
                             maybeAddImport("com.launchdarkly.sdk.LDContext");
                             doAfterVisit(new ChangeType("com.launchdarkly.sdk.LDUser", "com.launchdarkly.sdk.LDContext", null).getVisitor());
-                            return JavaTemplate.builder("LDContext.builder(#{any(java.lang.String)})")
+                            return JavaTemplate.builder("LDContext.builder(#{any(String)})")
                                     .contextSensitive()
                                     .javaParser(JavaParser.fromJavaVersion().classpathFromResources(ctx, "launchdarkly-java-server-sdk-6.+"))
                                     .imports("com.launchdarkly.sdk.LDContext")
@@ -97,9 +97,9 @@ public class MigrateUserToContext extends Recipe {
                         if (BUILTIN_ATTRIBUTE.matches(m) && BASIC_ATTRIBUTES.contains(m.getSimpleName())) {
                             String code;
                             if (requireNonNull(m.getPadding().getSelect()).getAfter().getWhitespace().contains("\n")) {
-                                code = "#{any(com.launchdarkly.sdk.ContextBuilder)}\n.set(#{any(java.lang.String)}, #{any()})";
+                                code = "#{any(com.launchdarkly.sdk.ContextBuilder)}\n.set(#{any(String)}, #{any()})";
                             } else {
-                                code = "#{any(com.launchdarkly.sdk.ContextBuilder)}.set(#{any(java.lang.String)}, #{any()})";
+                                code = "#{any(com.launchdarkly.sdk.ContextBuilder)}.set(#{any(String)}, #{any()})";
                             }
                             return JavaTemplate.builder(code)
                                     .contextSensitive()
@@ -119,9 +119,9 @@ public class MigrateUserToContext extends Recipe {
 
                             String code;
                             if (requireNonNull(m.getPadding().getSelect()).getAfter().getWhitespace().contains("\n")) {
-                                code = "#{any(com.launchdarkly.sdk.ContextBuilder)}\n.set(#{any(java.lang.String)}, #{any()})\n.privateAttributes(#{any(java.lang.String)})";
+                                code = "#{any(com.launchdarkly.sdk.ContextBuilder)}\n.set(#{any(String)}, #{any()})\n.privateAttributes(#{any(String)})";
                             } else {
-                                code = "#{any(com.launchdarkly.sdk.ContextBuilder)}.set(#{any(java.lang.String)}, #{any()}).privateAttributes(#{any(java.lang.String)})";
+                                code = "#{any(com.launchdarkly.sdk.ContextBuilder)}.set(#{any(String)}, #{any()}).privateAttributes(#{any(String)})";
                             }
                             String attributeName = StringUtils.uncapitalize(m.getSimpleName().replace("private", ""));
                             return JavaTemplate.builder(code)
@@ -141,9 +141,9 @@ public class MigrateUserToContext extends Recipe {
                         if (CUSTOM_ATTRIBUTES.matches(m)) {
                             String code;
                             if (requireNonNull(m.getPadding().getSelect()).getAfter().getWhitespace().contains("\n")) {
-                                code = "#{any(com.launchdarkly.sdk.ContextBuilder)}\n.set(#{any(java.lang.String)}, #{any()})";
+                                code = "#{any(com.launchdarkly.sdk.ContextBuilder)}\n.set(#{any(String)}, #{any()})";
                             } else {
-                                code = "#{any(com.launchdarkly.sdk.ContextBuilder)}.set(#{any(java.lang.String)}, #{any()})";
+                                code = "#{any(com.launchdarkly.sdk.ContextBuilder)}.set(#{any(String)}, #{any()})";
                             }
                             return JavaTemplate.builder(code)
                                     .contextSensitive()
@@ -157,9 +157,9 @@ public class MigrateUserToContext extends Recipe {
 
                             String code;
                             if (requireNonNull(m.getPadding().getSelect()).getAfter().getWhitespace().contains("\n")) {
-                                code = "#{any(com.launchdarkly.sdk.ContextBuilder)}\n.set(#{any(java.lang.String)}, #{any()})\n.privateAttributes(#{any(java.lang.String)})";
+                                code = "#{any(com.launchdarkly.sdk.ContextBuilder)}\n.set(#{any(String)}, #{any()})\n.privateAttributes(#{any(String)})";
                             } else {
-                                code = "#{any(com.launchdarkly.sdk.ContextBuilder)}.set(#{any(java.lang.String)}, #{any()}).privateAttributes(#{any(java.lang.String)})";
+                                code = "#{any(com.launchdarkly.sdk.ContextBuilder)}.set(#{any(String)}, #{any()}).privateAttributes(#{any(String)})";
                             }
                             return JavaTemplate.builder(code)
                                     .contextSensitive()
@@ -176,7 +176,7 @@ public class MigrateUserToContext extends Recipe {
 
     private static class UseVarargsForPrivateAttributes extends JavaIsoVisitor<ExecutionContext> {
         private static final MethodMatcher CONTEXT_BUILDER_MATCHER = new MethodMatcher("com.launchdarkly.sdk.ContextBuilder *(..)");
-        private static final MethodMatcher PRIVATE_ATTRIBUTES_STRING_VARARGS_MATCHER = new MethodMatcher("com.launchdarkly.sdk.ContextBuilder privateAttributes(java.lang.String...)");
+        private static final MethodMatcher PRIVATE_ATTRIBUTES_STRING_VARARGS_MATCHER = new MethodMatcher("com.launchdarkly.sdk.ContextBuilder privateAttributes(String...)");
         private static final MethodMatcher USER_BUILDER_BUILD_MATCHER = new MethodMatcher("com.launchdarkly.sdk.LDContext$Builder build()");
         private static final MethodMatcher CONTEXT_BUILDER_BUILD_MATCHER = new MethodMatcher("com.launchdarkly.sdk.ContextBuilder build()");
 
