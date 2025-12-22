@@ -1,0 +1,89 @@
+/*
+ * Copyright 2025 the original author or authors.
+ * <p>
+ * Licensed under the Moderne Source Available License (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * https://docs.moderne.io/licensing/moderne-source-available-license
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.openrewrite.featureflags.quarkus;
+
+import org.junit.jupiter.api.Test;
+import org.openrewrite.DocumentExample;
+import org.openrewrite.java.JavaParser;
+import org.openrewrite.test.RecipeSpec;
+import org.openrewrite.test.RewriteTest;
+
+import static org.openrewrite.java.Assertions.java;
+
+class RemoveGetIntTest implements RewriteTest {
+
+    @Override
+    public void defaults(RecipeSpec spec) {
+        spec.recipe(new RemoveGetInt("flag-key-123abc", 100))
+          .parser(JavaParser.fromJavaVersion().classpath("quarkus-flags"));
+    }
+
+    @DocumentExample
+    @Test
+    void removeGetInt() {
+        rewriteRun(
+          //language=java
+          java(
+            """
+              import io.quarkiverse.flags.Flags;
+
+              class Foo {
+                  void bar(Flags flags) {
+                      int maxRetries = flags.getInt("flag-key-123abc");
+                      System.out.println("Max retries: " + maxRetries);
+                  }
+              }
+              """,
+            """
+              import io.quarkiverse.flags.Flags;
+
+              class Foo {
+                  void bar(Flags flags) {
+                      System.out.println("Max retries: " + 100);
+                  }
+              }
+              """
+          )
+        );
+    }
+
+    @Test
+    void removeInlineIntValue() {
+        rewriteRun(
+          //language=java
+          java(
+            """
+              import io.quarkiverse.flags.Flags;
+
+              class Foo {
+                  void bar(Flags flags) {
+                      System.out.println("Timeout: " + flags.getInt("flag-key-123abc"));
+                  }
+              }
+              """,
+            """
+              import io.quarkiverse.flags.Flags;
+
+              class Foo {
+                  void bar(Flags flags) {
+                      System.out.println("Timeout: " + 100);
+                  }
+              }
+              """
+          )
+        );
+    }
+}
