@@ -545,6 +545,129 @@ examples:
     language: java
 ---
 type: specs.openrewrite.org/v1beta/example
+recipeName: org.openrewrite.featureflags.quarkus.RemoveGetInt
+examples:
+- description: '`RemoveGetIntTest#removeGetInt`'
+  parameters:
+  - flag-key-123abc
+  - '100'
+  sources:
+  - before: |
+      import io.quarkiverse.flags.Flags;
+
+      class Foo {
+          void bar(Flags flags) {
+              int maxRetries = flags.getInt("flag-key-123abc");
+              System.out.println("Max retries: " + maxRetries);
+          }
+      }
+    after: |
+      import io.quarkiverse.flags.Flags;
+
+      class Foo {
+          void bar(Flags flags) {
+              System.out.println("Max retries: " + 100);
+          }
+      }
+    language: java
+---
+type: specs.openrewrite.org/v1beta/example
+recipeName: org.openrewrite.featureflags.quarkus.RemoveGetString
+examples:
+- description: '`RemoveGetStringTest#removeGetString`'
+  parameters:
+  - flag-key-123abc
+  - production
+  sources:
+  - before: |
+      import io.quarkiverse.flags.Flags;
+
+      class Foo {
+          void bar(Flags flags) {
+              String environment = flags.getString("flag-key-123abc");
+              if ("production".equals(environment)) {
+                  System.out.println("Production mode");
+              } else {
+                  System.out.println("Default mode");
+              }
+          }
+      }
+    after: |
+      import io.quarkiverse.flags.Flags;
+
+      class Foo {
+          void bar(Flags flags) {
+              System.out.println("Production mode");
+          }
+      }
+    language: java
+---
+type: specs.openrewrite.org/v1beta/example
+recipeName: org.openrewrite.featureflags.quarkus.RemoveIsEnabled
+examples:
+- description: '`RemoveIsEnabledTest#removeIsEnabled`'
+  parameters:
+  - flag-key-123abc
+  - 'true'
+  sources:
+  - before: |
+      import io.quarkiverse.flags.Flags;
+
+      class Test {
+          void bar(Flags flags) {
+              if (flags.isEnabled("flag-key-123abc")) {
+                  System.out.println("Feature enabled");
+              } else {
+                  System.out.println("Feature disabled");
+              }
+          }
+      }
+    after: |
+      import io.quarkiverse.flags.Flags;
+
+      class Test {
+          void bar(Flags flags) {
+              System.out.println("Feature enabled");
+          }
+      }
+    language: java
+---
+type: specs.openrewrite.org/v1beta/example
+recipeName: org.openrewrite.featureflags.quarkus.search.FindFeatureFlag
+examples:
+- description: '`FindFeatureFlagTest#findFeatureFlag`'
+  parameters:
+  - 'null'
+  sources:
+  - before: |
+      import io.quarkiverse.flags.Flags;
+
+      class Test {
+          public void a(Flags flags) {
+              boolean flagValue = flags.isEnabled("flag-key-123abc");
+              if (flagValue) {
+                  // Application code to show the feature
+              } else {
+                  // The code to run if the feature is off
+              }
+          }
+      }
+    after: |
+      import io.quarkiverse.flags.Flags;
+
+      class Test {
+          public void a(Flags flags) {
+              boolean flagValue = /*~~>*/flags.isEnabled("flag-key-123abc");
+              if (flagValue) {
+                  // Application code to show the feature
+              } else {
+                  // The code to run if the feature is off
+              }
+          }
+      }
+    language: java
+---
+type: specs.openrewrite.org/v1beta/example
 recipeName: org.openrewrite.featureflags.search.FindFeatureFlag
 examples:
 - description: '`FindFeatureFlagTest#findFeatureFlagWithAnyKey`'
