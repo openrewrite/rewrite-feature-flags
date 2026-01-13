@@ -39,15 +39,9 @@ public class RemoveGetString extends Recipe {
             example = "topic-456")
     String replacementValue;
 
-    @Override
-    public String getDisplayName() {
-        return "Remove Quarkus feature flag's `getString` for feature key";
-    }
+    String displayName = "Remove Quarkus feature flag's `getString` for feature key";
 
-    @Override
-    public String getDescription() {
-        return "Replace `getString()` invocations for `featureKey` with `replacementValue`, and simplify constant if branch execution.";
-    }
+    String description = "Replace `getString()` invocations for `featureKey` with `replacementValue`, and simplify constant if branch execution.";
 
     @Override
     public List<Recipe> getRecipeList() {

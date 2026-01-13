@@ -39,15 +39,9 @@ public class RemoveGetInt extends Recipe {
             example = "42")
     Integer replacementValue;
 
-    @Override
-    public String getDisplayName() {
-        return "Remove Quarkus feature flag's `getInt` for feature key";
-    }
+    String displayName = "Remove Quarkus feature flag's `getInt` for feature key";
 
-    @Override
-    public String getDescription() {
-        return "Replace `getInt()` invocations for `featureKey` with `replacementValue`, and simplify constant if branch execution.";
-    }
+    String description = "Replace `getInt()` invocations for `featureKey` with `replacementValue`, and simplify constant if branch execution.";
 
     @Override
     public List<Recipe> getRecipeList() {

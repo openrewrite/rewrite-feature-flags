@@ -29,15 +29,9 @@ import static java.util.Collections.singletonList;
 @Value
 public class RemoveDoubleVariation extends Recipe {
 
-    @Override
-    public String getDisplayName() {
-        return "Remove LaunchDarkly's `doubleVariation` for feature key";
-    }
+    String displayName = "Remove LaunchDarkly's `doubleVariation` for feature key";
 
-    @Override
-    public String getDescription() {
-        return "Replace `doubleVariation` invocations for feature key with value, and simplify constant if branch execution.";
-    }
+    String description = "Replace `doubleVariation` invocations for feature key with value, and simplify constant if branch execution.";
 
     @Option(displayName = "Feature flag key",
             description = "The key of the feature flag to remove.",

@@ -39,15 +39,9 @@ public class RemoveGetDoubleValue extends Recipe {
             example = "3.14")
     Double replacementValue;
 
-    @Override
-    public String getDisplayName() {
-        return "Remove OpenFeature's `getDoubleValue` for feature key";
-    }
+    String displayName = "Remove OpenFeature's `getDoubleValue` for feature key";
 
-    @Override
-    public String getDescription() {
-        return "Replace `getDoubleValue()` invocations for `featureKey` with `replacementValue`, and simplify constant if branch execution.";
-    }
+    String description = "Replace `getDoubleValue()` invocations for `featureKey` with `replacementValue`, and simplify constant if branch execution.";
 
     @Override
     public List<Recipe> getRecipeList() {

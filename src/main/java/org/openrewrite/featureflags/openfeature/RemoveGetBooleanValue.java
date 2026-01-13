@@ -39,15 +39,9 @@ public class RemoveGetBooleanValue extends Recipe {
             example = "true")
     Boolean replacementValue;
 
-    @Override
-    public String getDisplayName() {
-        return "Remove OpenFeature's `getBooleanValue` for feature key";
-    }
+    String displayName = "Remove OpenFeature's `getBooleanValue` for feature key";
 
-    @Override
-    public String getDescription() {
-        return "Replace `getBooleanValue()` invocations for `featureKey` with `replacementValue`, and simplify constant if branch execution.";
-    }
+    String description = "Replace `getBooleanValue()` invocations for `featureKey` with `replacementValue`, and simplify constant if branch execution.";
 
     @Override
     public List<Recipe> getRecipeList() {

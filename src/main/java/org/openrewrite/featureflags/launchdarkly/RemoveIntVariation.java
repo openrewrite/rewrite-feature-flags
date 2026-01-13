@@ -29,15 +29,9 @@ import static java.util.Collections.singletonList;
 @Value
 public class RemoveIntVariation extends Recipe {
 
-    @Override
-    public String getDisplayName() {
-        return "Remove LaunchDarkly's `intVariation` for feature key";
-    }
+    String displayName = "Remove LaunchDarkly's `intVariation` for feature key";
 
-    @Override
-    public String getDescription() {
-        return "Replace `intVariation` invocations for feature key with value, and simplify constant if branch execution.";
-    }
+    String description = "Replace `intVariation` invocations for feature key with value, and simplify constant if branch execution.";
 
     @Option(displayName = "Feature flag key",
             description = "The key of the feature flag to remove.",

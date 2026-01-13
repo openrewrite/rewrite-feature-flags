@@ -35,15 +35,9 @@ public class FindFeatureFlag extends Recipe {
     @Nullable
     String featureKey;
 
-    @Override
-    public String getDisplayName() {
-        return "Find a Quarkus feature flag";
-    }
+    String displayName = "Find a Quarkus feature flag";
 
-    @Override
-    public String getDescription() {
-        return "Find a Quarkus feature flag.";
-    }
+    String description = "Find a Quarkus feature flag.";
 
     @Override
     public List<Recipe> getRecipeList() {

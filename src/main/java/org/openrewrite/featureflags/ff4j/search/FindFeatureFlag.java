@@ -36,15 +36,9 @@ public class FindFeatureFlag extends Recipe {
     @Nullable
     String featureKey;
 
-    @Override
-    public String getDisplayName() {
-        return "Find a FF4j feature flag";
-    }
+    String displayName = "Find a FF4j feature flag";
 
-    @Override
-    public String getDescription() {
-        return "Find a FF4j feature flag.";
-    }
+    String description = "Find a FF4j feature flag.";
 
     @Override
     public List<Recipe> getRecipeList() {

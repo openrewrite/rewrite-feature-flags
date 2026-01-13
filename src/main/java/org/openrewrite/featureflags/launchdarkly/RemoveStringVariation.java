@@ -29,15 +29,9 @@ import static java.util.Collections.singletonList;
 @Value
 public class RemoveStringVariation extends Recipe {
 
-    @Override
-    public String getDisplayName() {
-        return "Remove LaunchDarkly's `boolVariation` for feature key";
-    }
+    String displayName = "Remove LaunchDarkly's `boolVariation` for feature key";
 
-    @Override
-    public String getDescription() {
-        return "Replace `boolVariation` invocations for feature key with value, and simplify constant if branch execution.";
-    }
+    String description = "Replace `boolVariation` invocations for feature key with value, and simplify constant if branch execution.";
 
     @Option(displayName = "Feature flag key",
             description = "The key of the feature flag to remove.",

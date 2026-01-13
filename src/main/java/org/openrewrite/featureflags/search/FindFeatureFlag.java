@@ -48,15 +48,9 @@ public class FindFeatureFlag extends Recipe {
     @Nullable
     String featureKey;
 
-    @Override
-    public String getDisplayName() {
-        return "Find a feature flag";
-    }
+    String displayName = "Find a feature flag";
 
-    @Override
-    public String getDescription() {
-        return "Find a feature flag matching method pattern.";
-    }
+    String description = "Find a feature flag matching method pattern.";
 
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {

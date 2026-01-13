@@ -39,15 +39,9 @@ public class RemoveGetIntegerValue extends Recipe {
             example = "42")
     Integer replacementValue;
 
-    @Override
-    public String getDisplayName() {
-        return "Remove OpenFeature's `getIntegerValue` for feature key";
-    }
+    String displayName = "Remove OpenFeature's `getIntegerValue` for feature key";
 
-    @Override
-    public String getDescription() {
-        return "Replace `getIntegerValue()` invocations for `featureKey` with `replacementValue`, and simplify constant if branch execution.";
-    }
+    String description = "Replace `getIntegerValue()` invocations for `featureKey` with `replacementValue`, and simplify constant if branch execution.";
 
     @Override
     public List<Recipe> getRecipeList() {

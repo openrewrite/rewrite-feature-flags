@@ -39,15 +39,9 @@ public class RemoveGetStringValue extends Recipe {
             example = "topic-456")
     String replacementValue;
 
-    @Override
-    public String getDisplayName() {
-        return "Remove OpenFeature's `getStringValue` for feature key";
-    }
+    String displayName = "Remove OpenFeature's `getStringValue` for feature key";
 
-    @Override
-    public String getDescription() {
-        return "Replace `getStringValue()` invocations for `featureKey` with `replacementValue`, and simplify constant if branch execution.";
-    }
+    String description = "Replace `getStringValue()` invocations for `featureKey` with `replacementValue`, and simplify constant if branch execution.";
 
     @Override
     public List<Recipe> getRecipeList() {

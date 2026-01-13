@@ -39,15 +39,9 @@ public class RemoveIsEnabled extends Recipe {
             example = "true")
     Boolean replacementValue;
 
-    @Override
-    public String getDisplayName() {
-        return "Remove Unleash's `isEnabled` for feature key";
-    }
+    String displayName = "Remove Unleash's `isEnabled` for feature key";
 
-    @Override
-    public String getDescription() {
-        return "Replace `isEnabled()` invocations for `featureKey` with `replacementValue`, and simplify constant if branch execution.";
-    }
+    String description = "Replace `isEnabled()` invocations for `featureKey` with `replacementValue`, and simplify constant if branch execution.";
 
     @Override
     public List<Recipe> getRecipeList() {

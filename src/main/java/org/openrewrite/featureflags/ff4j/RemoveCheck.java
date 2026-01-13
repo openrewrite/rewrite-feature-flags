@@ -39,15 +39,9 @@ public class RemoveCheck extends Recipe {
             example = "true")
     Boolean replacementValue;
 
-    @Override
-    public String getDisplayName() {
-        return "Remove FF4j's `check` for feature key";
-    }
+    String displayName = "Remove FF4j's `check` for feature key";
 
-    @Override
-    public String getDescription() {
-        return "Replace `check()` invocations for `featureKey` with `replacementValue`, and simplify constant if branch execution.";
-    }
+    String description = "Replace `check()` invocations for `featureKey` with `replacementValue`, and simplify constant if branch execution.";
 
     @Override
     public List<Recipe> getRecipeList() {

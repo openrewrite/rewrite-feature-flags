@@ -39,15 +39,9 @@ import org.openrewrite.staticanalysis.SimplifyConstantIfBranchExecution;
 @Value
 public class RemoveBooleanFlag extends Recipe {
 
-    @Override
-    public String getDisplayName() {
-        return "Remove a boolean feature flag for feature key";
-    }
+    String displayName = "Remove a boolean feature flag for feature key";
 
-    @Override
-    public String getDescription() {
-        return "Replace method invocations for feature key with value, and simplify constant if branch execution.";
-    }
+    String description = "Replace method invocations for feature key with value, and simplify constant if branch execution.";
 
     @Option(displayName = "Method pattern",
             description = "A method pattern to match against. The first argument must be the feature key as `String`.",

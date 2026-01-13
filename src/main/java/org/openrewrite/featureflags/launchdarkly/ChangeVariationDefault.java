@@ -33,15 +33,9 @@ import org.openrewrite.marker.Markers;
 @EqualsAndHashCode(callSuper = false)
 @Value
 public class ChangeVariationDefault extends Recipe {
-    @Override
-    public String getDisplayName() {
-        return "Change the default value for feature key";
-    }
+    String displayName = "Change the default value for feature key";
 
-    @Override
-    public String getDescription() {
-        return "Change the default value for `Variation` invocations for feature key.";
-    }
+    String description = "Change the default value for `Variation` invocations for feature key.";
 
     @Option(displayName = "Feature flag key",
             description = "The key of the feature flag to remove.",

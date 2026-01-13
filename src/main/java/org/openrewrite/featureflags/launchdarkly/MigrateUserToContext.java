@@ -48,15 +48,9 @@ public class MigrateUserToContext extends Recipe {
     private static final MethodMatcher CUSTOM_ATTRIBUTES = new MethodMatcher("com.launchdarkly.sdk.LDUser.Builder custom(String, ..)"); // FIXME: This really should be `*`
     private static final MethodMatcher PRIVATE_CUSTOM_ATTRIBUTES = new MethodMatcher("com.launchdarkly.sdk.LDUser.Builder privateCustom(String, ..)"); // FIXME: This really should be `*`
 
-    @Override
-    public String getDisplayName() {
-        return "Migrate `LDUser` to `LDContext`";
-    }
+    String displayName = "Migrate `LDUser` to `LDContext`";
 
-    @Override
-    public String getDescription() {
-        return "Migrate from `LDUser` and `LDUser.Builder` to `LDContext` and `ContextBuilder`.";
-    }
+    String description = "Migrate from `LDUser` and `LDUser.Builder` to `LDContext` and `ContextBuilder`.";
 
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
