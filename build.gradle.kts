@@ -14,14 +14,11 @@ dependencies {
     implementation("org.openrewrite.recipe:rewrite-java-dependencies:$rewriteVersion")
     implementation("org.openrewrite.recipe:rewrite-static-analysis:$rewriteVersion")
 
-    implementation("org.assertj:assertj-core:3.27.4")
     testImplementation("org.openrewrite:rewrite-java-21")
     testImplementation("org.openrewrite:rewrite-test")
     testImplementation("org.openrewrite:rewrite-gradle")
     testImplementation("org.openrewrite.gradle.tooling:model:$rewriteVersion")
     testImplementation("org.openrewrite:rewrite-maven")
-
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.14.2")
 
     testImplementation("dev.openfeature:sdk:latest.release")
     testImplementation("io.getunleash:unleash-client-java:latest.release")
@@ -29,7 +26,7 @@ dependencies {
     testImplementation("org.ff4j:ff4j-core:2.0.0") // 2.1.x requires Java 21
 
     testRuntimeOnly("com.launchdarkly:launchdarkly-java-server-sdk:5.+")
-
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.+")
     testRuntimeOnly(gradleApi())
 }
 
