@@ -19,6 +19,8 @@ type: specs.openrewrite.org/v1beta/recipe
 name: org.openrewrite.featureflags.launchdarkly.UpgradeLaunchDarkly7
 displayName: Migrate to LaunchDarkly 7.x
 description: This recipe will apply changes commonly needed when migrating to LaunchDarkly 7.x.
+preconditions:
+  - org.openrewrite.Singleton
 recipeList:
   - org.openrewrite.featureflags.launchdarkly.UpgradeLaunchDarkly6
   # https://docs.launchdarkly.com/sdk/server-side/java/migration-6-to-7
