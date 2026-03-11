@@ -15,7 +15,9 @@
  */
 package org.openrewrite.featureflags.launchdarkly.search;
 
+import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.jspecify.annotations.Nullable;
 import org.openrewrite.*;
@@ -122,6 +124,7 @@ public class FindFeatureFlag extends Recipe {
         });
     }
 
+    @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
     public enum FeatureFlagType {
         Bool("boolVariation"),
         Double("doubleVariation"),
@@ -131,10 +134,6 @@ public class FindFeatureFlag extends Recipe {
         String("stringVariation");
 
         private final String methodName;
-
-        FeatureFlagType(String methodName) {
-            this.methodName = methodName;
-        }
 
         public MethodMatcher asMethodMatcher() {
             return new MethodMatcher("com.launchdarkly.sdk.server.LDClient " + methodName + "(..)");
