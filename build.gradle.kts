@@ -14,7 +14,7 @@ dependencies {
     implementation("org.openrewrite.recipe:rewrite-java-dependencies:$rewriteVersion")
     implementation("org.openrewrite.recipe:rewrite-static-analysis:$rewriteVersion")
 
-    testImplementation("org.openrewrite:rewrite-java-21")
+    testImplementation("org.openrewrite:rewrite-java-25")
     testImplementation("org.openrewrite:rewrite-test")
     testImplementation("org.openrewrite:rewrite-gradle")
     testImplementation("org.openrewrite.gradle.tooling:model:$rewriteVersion")
