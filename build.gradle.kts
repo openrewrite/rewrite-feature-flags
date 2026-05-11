@@ -6,14 +6,6 @@ plugins {
 group = "org.openrewrite.recipe"
 description = "Feature flag migration"
 
-// rewrite-gradle-tooling-api still embeds Gradle 8.12 (ASM 9.7), which cannot read class file v69 (Java 25).
-// Pin the toolchain to Java 21 until the embedded Gradle is upgraded.
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
-
 val rewriteVersion = rewriteRecipe.rewriteVersion.get()
 dependencies {
     implementation(platform("org.openrewrite:rewrite-bom:$rewriteVersion"))
