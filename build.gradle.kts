@@ -26,7 +26,6 @@ dependencies {
     testImplementation("org.ff4j:ff4j-core:2.0.0") // 2.1.x requires Java 21
 
     testRuntimeOnly("com.launchdarkly:launchdarkly-java-server-sdk:5.+")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.+")
     testRuntimeOnly(gradleApi())
 }
 
