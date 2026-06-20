@@ -72,10 +72,10 @@ public class MigrateLDContextToEvaluationContext extends Recipe {
                 if (NAME.matches(m)) {
                     J.Literal nameLiteral = new J.Literal(Tree.randomId(), Space.EMPTY, Markers.EMPTY, "name", "\"name\"", null, JavaType.Primitive.String);
                     Expression value = m.getArguments().get(0).withPrefix(Space.SINGLE_SPACE);
-                    return renameToAdd(m).withArguments(Arrays.asList(nameLiteral, value));
+                    return m.withName(m.getName().withSimpleName("add")).withArguments(Arrays.asList(nameLiteral, value));
                 }
                 if (SET.matches(m)) {
-                    return renameToAdd(m);
+                    return m.withName(m.getName().withSimpleName("add"));
                 }
                 if (BUILD.matches(m) && m.getSelect() != null) {
                     // Drop the terminal `build()`; OpenFeature's MutableContext is itself the EvaluationContext.
@@ -83,10 +83,6 @@ public class MigrateLDContextToEvaluationContext extends Recipe {
                     return m.getSelect().withPrefix(m.getPrefix());
                 }
                 return m;
-            }
-
-            private J.MethodInvocation renameToAdd(J.MethodInvocation m) {
-                return m.withName(m.getName().withSimpleName("add"));
             }
         });
     }
