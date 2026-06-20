@@ -70,8 +70,8 @@ public class MigrateLDValueToValue extends Recipe {
                 // precondition above: run unconditionally they would migrate jsonValueVariation while leaving an
                 // unconverted LDValue default, or corrupt LDValue.buildObject()/buildArray()/parse() into Value.*.
                 // They run after this pass, by which point the supported LDValue.of(...) factories are new Value(...).
-                doAfterVisit(reorderContextLast("jsonValueVariation"));
-                doAfterVisit(reorderContextLast("jsonValueVariationDetail"));
+                doAfterVisit(new ReorderMethodArguments("com.launchdarkly.sdk.server.LDClient jsonValueVariation(String, com.launchdarkly.sdk.LDContext, com.launchdarkly.sdk.LDValue)", CONTEXT_LAST, CONTEXT_SECOND, null, null).getVisitor());
+                doAfterVisit(new ReorderMethodArguments("com.launchdarkly.sdk.server.LDClient jsonValueVariationDetail(String, com.launchdarkly.sdk.LDContext, com.launchdarkly.sdk.LDValue)", CONTEXT_LAST, CONTEXT_SECOND, null, null).getVisitor());
                 doAfterVisit(new ChangeMethodName("com.launchdarkly.sdk.server.LDClient jsonValueVariation(..)", "getObjectValue", null, null).getVisitor());
                 doAfterVisit(new ChangeMethodName("com.launchdarkly.sdk.server.LDClient jsonValueVariationDetail(..)", "getObjectDetails", null, null).getVisitor());
                 doAfterVisit(new ChangeType("com.launchdarkly.sdk.LDValue", "dev.openfeature.sdk.Value", null).getVisitor());
@@ -113,12 +113,6 @@ public class MigrateLDValueToValue extends Recipe {
                         .build()
                         .apply(getCursor(), m.getCoordinates().replace(), m.getArguments().get(0))
                         .withPrefix(m.getPrefix());
-            }
-
-            private TreeVisitor<?, ExecutionContext> reorderContextLast(String method) {
-                return new ReorderMethodArguments(
-                        "com.launchdarkly.sdk.server.LDClient " + method + "(String, com.launchdarkly.sdk.LDContext, com.launchdarkly.sdk.LDValue)",
-                        CONTEXT_LAST, CONTEXT_SECOND, null, null).getVisitor();
             }
         });
     }
