@@ -93,6 +93,9 @@ recipeList:
   - org.openrewrite.featureflags.launchdarkly.MigrateLDContextToEvaluationContext
   # Migrate jsonValueVariation + LDValue defaults (self-gated: skipped for unsupported LDValue builders).
   - org.openrewrite.featureflags.launchdarkly.MigrateLDValueToValue
+  # Migrate client lifecycle calls and flag EvaluationDetail accessors that have no OpenFeature equivalent.
+  - org.openrewrite.featureflags.launchdarkly.MigrateLDClientLifecycle
+  - org.openrewrite.featureflags.launchdarkly.MarkIncompatibleEvaluationDetailAccessors
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.launchdarkly.sdk.server.LDClient
       newFullyQualifiedTypeName: dev.openfeature.sdk.Client

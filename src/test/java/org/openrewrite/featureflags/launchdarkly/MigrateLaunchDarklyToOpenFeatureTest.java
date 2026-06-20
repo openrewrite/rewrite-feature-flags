@@ -105,6 +105,39 @@ class MigrateLaunchDarklyToOpenFeatureTest implements RewriteTest {
     }
 
     @Test
+    void migrateClientLifecycle() {
+        rewriteRun(
+          //language=java
+          java(
+            """
+              import com.launchdarkly.sdk.server.LDClient;
+
+              class A {
+                  void shutdown(LDClient client) {
+                      if (client.isInitialized()) {
+                          client.close();
+                      }
+                  }
+              }
+              """,
+            """
+              import dev.openfeature.sdk.Client;
+              import dev.openfeature.sdk.OpenFeatureAPI;
+              import dev.openfeature.sdk.ProviderState;
+
+              class A {
+                  void shutdown(Client client) {
+                      if (OpenFeatureAPI.getInstance().getClient().getProviderState() == ProviderState.READY) {
+                          OpenFeatureAPI.getInstance().shutdown();
+                      }
+                  }
+              }
+              """
+          )
+        );
+    }
+
+    @Test
     void migrateJsonValueEvaluation() {
         rewriteRun(
           //language=java
