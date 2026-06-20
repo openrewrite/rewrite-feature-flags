@@ -66,8 +66,10 @@ public class MigrateLDValueToValue extends Recipe {
         return Preconditions.check(precondition, new JavaVisitor<ExecutionContext>() {
             @Override
             public J visitCompilationUnit(J.CompilationUnit cu, ExecutionContext ctx) {
-                // Register after every supported LDValue.of(...) has become a new Value(...), so only bare type
-                // references remain to retype. Gated by the precondition, so unsupported builders are never reached.
+                // ChangeType is registered here (rather than in getRecipeList) so it stays gated by the precondition
+                // above: a getRecipeList recipe runs unconditionally and would corrupt LDValue.buildObject()/
+                // buildArray()/parse() into non-existent Value.* calls. It runs after this pass, by which point the
+                // supported LDValue.of(...) factories are already new Value(...), leaving only bare types to retype.
                 doAfterVisit(new ChangeType("com.launchdarkly.sdk.LDValue", "dev.openfeature.sdk.Value", null).getVisitor());
                 return super.visitCompilationUnit(cu, ctx);
             }
