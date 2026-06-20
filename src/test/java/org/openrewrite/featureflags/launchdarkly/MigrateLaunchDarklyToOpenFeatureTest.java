@@ -30,7 +30,7 @@ class MigrateLaunchDarklyToOpenFeatureTest implements RewriteTest {
     public void defaults(RecipeSpec spec) {
         spec.recipeFromResources("org.openrewrite.featureflags.launchdarkly.MigrateLaunchDarklyToOpenFeature")
           .parser(JavaParser.fromJavaVersion()
-            .classpathFromResources(new InMemoryExecutionContext(), "launchdarkly-java-server-sdk-6.+", "sdk-1.+"));
+            .classpathFromResources(new InMemoryExecutionContext(), "launchdarkly-java-server-sdk-6.+"));
     }
 
     @DocumentExample

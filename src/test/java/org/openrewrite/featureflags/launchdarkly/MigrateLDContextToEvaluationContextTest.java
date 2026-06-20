@@ -30,7 +30,7 @@ class MigrateLDContextToEvaluationContextTest implements RewriteTest {
     public void defaults(RecipeSpec spec) {
         spec.recipe(new MigrateLDContextToEvaluationContext())
           .parser(JavaParser.fromJavaVersion()
-            .classpathFromResources(new InMemoryExecutionContext(), "launchdarkly-java-server-sdk-6.+", "sdk-1.+"));
+            .classpathFromResources(new InMemoryExecutionContext(), "launchdarkly-java-server-sdk-6.+"));
     }
 
     @DocumentExample
