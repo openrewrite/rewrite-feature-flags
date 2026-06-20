@@ -46,6 +46,22 @@ recipeList:
       methodPattern: com.launchdarkly.sdk.server.LDClient doubleVariation(String, com.launchdarkly.sdk.LDContext, double)
       oldParameterNames: [key, context, value]
       newParameterNames: [key, value, context]
+  - org.openrewrite.java.ReorderMethodArguments:
+      methodPattern: com.launchdarkly.sdk.server.LDClient boolVariationDetail(String, com.launchdarkly.sdk.LDContext, boolean)
+      oldParameterNames: [key, context, value]
+      newParameterNames: [key, value, context]
+  - org.openrewrite.java.ReorderMethodArguments:
+      methodPattern: com.launchdarkly.sdk.server.LDClient stringVariationDetail(String, com.launchdarkly.sdk.LDContext, String)
+      oldParameterNames: [key, context, value]
+      newParameterNames: [key, value, context]
+  - org.openrewrite.java.ReorderMethodArguments:
+      methodPattern: com.launchdarkly.sdk.server.LDClient intVariationDetail(String, com.launchdarkly.sdk.LDContext, int)
+      oldParameterNames: [key, context, value]
+      newParameterNames: [key, value, context]
+  - org.openrewrite.java.ReorderMethodArguments:
+      methodPattern: com.launchdarkly.sdk.server.LDClient doubleVariationDetail(String, com.launchdarkly.sdk.LDContext, double)
+      oldParameterNames: [key, context, value]
+      newParameterNames: [key, value, context]
   # 2. Rename the evaluation methods to their OpenFeature equivalents.
   - org.openrewrite.java.ChangeMethodName:
       methodPattern: com.launchdarkly.sdk.server.LDClient boolVariation(..)
@@ -59,6 +75,18 @@ recipeList:
   - org.openrewrite.java.ChangeMethodName:
       methodPattern: com.launchdarkly.sdk.server.LDClient doubleVariation(..)
       newMethodName: getDoubleValue
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: com.launchdarkly.sdk.server.LDClient boolVariationDetail(..)
+      newMethodName: getBooleanDetails
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: com.launchdarkly.sdk.server.LDClient stringVariationDetail(..)
+      newMethodName: getStringDetails
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: com.launchdarkly.sdk.server.LDClient intVariationDetail(..)
+      newMethodName: getIntegerDetails
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: com.launchdarkly.sdk.server.LDClient doubleVariationDetail(..)
+      newMethodName: getDoubleDetails
   # 3. Rewrite construction, then retype any remaining bare LaunchDarkly type references to OpenFeature.
   #    Construction is rewritten before ChangeType so no `new LDClient(...)` / `LDContext.create(...)` remains.
   - org.openrewrite.featureflags.launchdarkly.MigrateLDClientToOpenFeature
@@ -72,6 +100,9 @@ recipeList:
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.launchdarkly.sdk.ContextBuilder
       newFullyQualifiedTypeName: dev.openfeature.sdk.MutableContext
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: com.launchdarkly.sdk.EvaluationDetail
+      newFullyQualifiedTypeName: dev.openfeature.sdk.FlagEvaluationDetails
   # 5. Pull in the OpenFeature SDK and the LaunchDarkly OpenFeature provider.
   - org.openrewrite.java.dependencies.AddDependency:
       groupId: dev.openfeature

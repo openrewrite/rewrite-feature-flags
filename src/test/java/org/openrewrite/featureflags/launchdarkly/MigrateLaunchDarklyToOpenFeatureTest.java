@@ -72,6 +72,39 @@ class MigrateLaunchDarklyToOpenFeatureTest implements RewriteTest {
     }
 
     @Test
+    void migrateBooleanDetailEvaluation() {
+        rewriteRun(
+          //language=java
+          java(
+            """
+              import com.launchdarkly.sdk.EvaluationDetail;
+              import com.launchdarkly.sdk.LDContext;
+              import com.launchdarkly.sdk.server.LDClient;
+
+              class FeatureFlags {
+                  boolean detail(LDClient client, LDContext context) {
+                      EvaluationDetail<Boolean> detail = client.boolVariationDetail("new-checkout", context, false);
+                      return detail.getValue();
+                  }
+              }
+              """,
+            """
+              import dev.openfeature.sdk.Client;
+              import dev.openfeature.sdk.EvaluationContext;
+              import dev.openfeature.sdk.FlagEvaluationDetails;
+
+              class FeatureFlags {
+                  boolean detail(Client client, EvaluationContext context) {
+                      FlagEvaluationDetails<Boolean> detail = client.getBooleanDetails("new-checkout", false, context);
+                      return detail.getValue();
+                  }
+              }
+              """
+          )
+        );
+    }
+
+    @Test
     void migrateStringIntDoubleEvaluations() {
         rewriteRun(
           //language=java
