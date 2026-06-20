@@ -91,6 +91,8 @@ recipeList:
   #    Construction is rewritten before ChangeType so no `new LDClient(...)` / `LDContext.create(...)` remains.
   - org.openrewrite.featureflags.launchdarkly.MigrateLDClientToOpenFeature
   - org.openrewrite.featureflags.launchdarkly.MigrateLDContextToEvaluationContext
+  # Migrate jsonValueVariation + LDValue defaults (self-gated: skipped for unsupported LDValue builders).
+  - org.openrewrite.featureflags.launchdarkly.MigrateLDValueToValue
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: com.launchdarkly.sdk.server.LDClient
       newFullyQualifiedTypeName: dev.openfeature.sdk.Client

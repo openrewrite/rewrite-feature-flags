@@ -105,6 +105,37 @@ class MigrateLaunchDarklyToOpenFeatureTest implements RewriteTest {
     }
 
     @Test
+    void migrateJsonValueEvaluation() {
+        rewriteRun(
+          //language=java
+          java(
+            """
+              import com.launchdarkly.sdk.LDContext;
+              import com.launchdarkly.sdk.LDValue;
+              import com.launchdarkly.sdk.server.LDClient;
+
+              class FeatureFlags {
+                  LDValue config(LDClient client, LDContext context) {
+                      return client.jsonValueVariation("config", context, LDValue.of("{}"));
+                  }
+              }
+              """,
+            """
+              import dev.openfeature.sdk.Client;
+              import dev.openfeature.sdk.EvaluationContext;
+              import dev.openfeature.sdk.Value;
+
+              class FeatureFlags {
+                  Value config(Client client, EvaluationContext context) {
+                      return client.getObjectValue("config", new Value("{}"), context);
+                  }
+              }
+              """
+          )
+        );
+    }
+
+    @Test
     void migrateStringIntDoubleEvaluations() {
         rewriteRun(
           //language=java
