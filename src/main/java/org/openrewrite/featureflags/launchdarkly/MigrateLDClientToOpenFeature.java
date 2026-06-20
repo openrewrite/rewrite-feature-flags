@@ -21,6 +21,7 @@ import org.openrewrite.ExecutionContext;
 import org.openrewrite.Preconditions;
 import org.openrewrite.Recipe;
 import org.openrewrite.TreeVisitor;
+import org.openrewrite.internal.ListUtils;
 import org.openrewrite.java.ChangeType;
 import org.openrewrite.java.JavaParser;
 import org.openrewrite.java.JavaTemplate;
@@ -28,6 +29,11 @@ import org.openrewrite.java.JavaVisitor;
 import org.openrewrite.java.MethodMatcher;
 import org.openrewrite.java.search.UsesType;
 import org.openrewrite.java.tree.J;
+import org.openrewrite.java.tree.Space;
+import org.openrewrite.java.tree.TextComment;
+import org.openrewrite.marker.Markers;
+
+import java.util.stream.Collectors;
 
 @EqualsAndHashCode(callSuper = false)
 @Value
@@ -38,8 +44,9 @@ public class MigrateLDClientToOpenFeature extends Recipe {
     String displayName = "Migrate LaunchDarkly `LDClient` construction to OpenFeature";
 
     String description = "Replace `new LDClient(...)` with `OpenFeatureAPI.getInstance().getClient()`. " +
-            "The LaunchDarkly SDK key and configuration are dropped, as provider setup " +
-            "(`OpenFeatureAPI.setProviderAndWait(...)`) is a one-time bootstrap that must be configured manually.";
+            "Provider setup (`OpenFeatureAPI.setProviderAndWait(...)`) is a one-time bootstrap that must be " +
+            "configured manually, so the original SDK key and configuration are preserved in a `TODO` comment " +
+            "rather than dropped silently.";
 
     @Override
     public TreeVisitor<?, ExecutionContext> getVisitor() {
@@ -50,11 +57,23 @@ public class MigrateLDClientToOpenFeature extends Recipe {
                 if (NEW_CLIENT.matches(nc)) {
                     maybeAddImport("dev.openfeature.sdk.OpenFeatureAPI");
                     doAfterVisit(new ChangeType("com.launchdarkly.sdk.server.LDClient", "dev.openfeature.sdk.Client", null).getVisitor());
-                    return JavaTemplate.builder("OpenFeatureAPI.getInstance().getClient()")
+                    J applied = JavaTemplate.builder("OpenFeatureAPI.getInstance().getClient()")
                             .imports("dev.openfeature.sdk.OpenFeatureAPI")
                             .javaParser(JavaParser.fromJavaVersion().classpathFromResources(ctx, "sdk-1.+"))
                             .build()
                             .apply(getCursor(), nc.getCoordinates().replace());
+                    // The LaunchDarkly configuration cannot be carried over automatically; surface it so the
+                    // one-time OpenFeature provider bootstrap can be wired up by hand instead of being lost.
+                    String args = nc.getArguments().stream()
+                            .filter(a -> !(a instanceof J.Empty))
+                            .map(a -> a.printTrimmed(getCursor()))
+                            .collect(Collectors.joining(", "));
+                    TextComment comment = new TextComment(true,
+                            " TODO Configure the OpenFeature provider, e.g. " +
+                                    "OpenFeatureAPI.getInstance().setProviderAndWait(new Provider(" + args + ")) ",
+                            " ", Markers.EMPTY);
+                    Space prefix = nc.getPrefix();
+                    return applied.withPrefix(prefix.withComments(ListUtils.concat(prefix.getComments(), comment)));
                 }
                 return nc;
             }

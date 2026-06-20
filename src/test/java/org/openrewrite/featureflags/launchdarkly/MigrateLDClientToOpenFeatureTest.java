@@ -51,7 +51,7 @@ class MigrateLDClientToOpenFeatureTest implements RewriteTest {
               import dev.openfeature.sdk.OpenFeatureAPI;
 
               class A {
-                  Client client = OpenFeatureAPI.getInstance().getClient();
+                  Client client = /* TODO Configure the OpenFeature provider, e.g. OpenFeatureAPI.getInstance().setProviderAndWait(new Provider("sdk-key-123abc")) */ OpenFeatureAPI.getInstance().getClient();
               }
               """
           )
