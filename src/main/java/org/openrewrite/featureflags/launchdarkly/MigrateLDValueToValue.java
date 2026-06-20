@@ -21,18 +21,16 @@ import org.openrewrite.ExecutionContext;
 import org.openrewrite.Preconditions;
 import org.openrewrite.Recipe;
 import org.openrewrite.TreeVisitor;
+import org.openrewrite.java.ChangeMethodName;
 import org.openrewrite.java.ChangeType;
 import org.openrewrite.java.JavaParser;
 import org.openrewrite.java.JavaTemplate;
 import org.openrewrite.java.JavaVisitor;
 import org.openrewrite.java.MethodMatcher;
+import org.openrewrite.java.ReorderMethodArguments;
 import org.openrewrite.java.search.UsesMethod;
 import org.openrewrite.java.search.UsesType;
-import org.openrewrite.java.tree.Expression;
 import org.openrewrite.java.tree.J;
-
-import java.util.Arrays;
-import java.util.List;
 
 @EqualsAndHashCode(callSuper = false)
 @Value
@@ -43,8 +41,9 @@ public class MigrateLDValueToValue extends Recipe {
     private static final MethodMatcher OF_INT = new MethodMatcher("com.launchdarkly.sdk.LDValue of(int)");
     private static final MethodMatcher OF_DOUBLE = new MethodMatcher("com.launchdarkly.sdk.LDValue of(double)");
     private static final MethodMatcher OF_NULL = new MethodMatcher("com.launchdarkly.sdk.LDValue ofNull()");
-    private static final MethodMatcher JSON_VARIATION = new MethodMatcher("com.launchdarkly.sdk.server.LDClient jsonValueVariation(String, com.launchdarkly.sdk.LDContext, com.launchdarkly.sdk.LDValue)");
-    private static final MethodMatcher JSON_VARIATION_DETAIL = new MethodMatcher("com.launchdarkly.sdk.server.LDClient jsonValueVariationDetail(String, com.launchdarkly.sdk.LDContext, com.launchdarkly.sdk.LDValue)");
+
+    private static final String[] CONTEXT_SECOND = {"key", "context", "value"};
+    private static final String[] CONTEXT_LAST = {"key", "value", "context"};
 
     String displayName = "Migrate LaunchDarkly `LDValue` and `jsonValueVariation` to OpenFeature";
 
@@ -66,10 +65,15 @@ public class MigrateLDValueToValue extends Recipe {
         return Preconditions.check(precondition, new JavaVisitor<ExecutionContext>() {
             @Override
             public J visitCompilationUnit(J.CompilationUnit cu, ExecutionContext ctx) {
-                // ChangeType is registered here (rather than in getRecipeList) so it stays gated by the precondition
-                // above: a getRecipeList recipe runs unconditionally and would corrupt LDValue.buildObject()/
-                // buildArray()/parse() into non-existent Value.* calls. It runs after this pass, by which point the
-                // supported LDValue.of(...) factories are already new Value(...), leaving only bare types to retype.
+                // Reuse the declarative recipes for the jsonValueVariation method migration, and retype LDValue last.
+                // These are registered here (rather than in getRecipeList or the composite) so they stay gated by the
+                // precondition above: run unconditionally they would migrate jsonValueVariation while leaving an
+                // unconverted LDValue default, or corrupt LDValue.buildObject()/buildArray()/parse() into Value.*.
+                // They run after this pass, by which point the supported LDValue.of(...) factories are new Value(...).
+                doAfterVisit(reorderContextLast("jsonValueVariation"));
+                doAfterVisit(reorderContextLast("jsonValueVariationDetail"));
+                doAfterVisit(new ChangeMethodName("com.launchdarkly.sdk.server.LDClient jsonValueVariation(..)", "getObjectValue", null, null).getVisitor());
+                doAfterVisit(new ChangeMethodName("com.launchdarkly.sdk.server.LDClient jsonValueVariationDetail(..)", "getObjectDetails", null, null).getVisitor());
                 doAfterVisit(new ChangeType("com.launchdarkly.sdk.LDValue", "dev.openfeature.sdk.Value", null).getVisitor());
                 return super.visitCompilationUnit(cu, ctx);
             }
@@ -98,12 +102,6 @@ public class MigrateLDValueToValue extends Recipe {
                             .apply(getCursor(), m.getCoordinates().replace())
                             .withPrefix(m.getPrefix());
                 }
-                if (JSON_VARIATION.matches(m)) {
-                    return contextLast(m, "getObjectValue");
-                }
-                if (JSON_VARIATION_DETAIL.matches(m)) {
-                    return contextLast(m, "getObjectDetails");
-                }
                 return m;
             }
 
@@ -117,17 +115,10 @@ public class MigrateLDValueToValue extends Recipe {
                         .withPrefix(m.getPrefix());
             }
 
-            // jsonValueVariation(key, context, value) -> getObjectValue(key, value, context)
-            private J.MethodInvocation contextLast(J.MethodInvocation m, String newName) {
-                List<Expression> args = m.getArguments();
-                Expression key = args.get(0);
-                Expression context = args.get(1);
-                Expression value = args.get(2);
-                List<Expression> reordered = Arrays.asList(
-                        key,
-                        value.withPrefix(context.getPrefix()),
-                        context.withPrefix(value.getPrefix()));
-                return m.withName(m.getName().withSimpleName(newName)).withArguments(reordered);
+            private TreeVisitor<?, ExecutionContext> reorderContextLast(String method) {
+                return new ReorderMethodArguments(
+                        "com.launchdarkly.sdk.server.LDClient " + method + "(String, com.launchdarkly.sdk.LDContext, com.launchdarkly.sdk.LDValue)",
+                        CONTEXT_LAST, CONTEXT_SECOND, null, null).getVisitor();
             }
         });
     }
