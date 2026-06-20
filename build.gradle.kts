@@ -33,4 +33,5 @@ recipeDependencies {
     parserClasspath("com.launchdarkly:launchdarkly-java-server-sdk:6.+")
     //parserClasspath("com.launchdarkly:launchdarkly-java-server-sdk:7.+")
     parserClasspath("dev.openfeature:sdk:1.+")
+    parserClasspath("com.launchdarkly:launchdarkly-openfeature-serverprovider:1.+")
 }

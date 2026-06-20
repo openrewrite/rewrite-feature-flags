@@ -35,7 +35,37 @@ class MigrateLDClientToOpenFeatureTest implements RewriteTest {
 
     @DocumentExample
     @Test
-    void newClientToOpenFeatureApi() {
+    void localVariableGeneratesProviderBootstrap() {
+        rewriteRun(
+          //language=java
+          java(
+            """
+              import com.launchdarkly.sdk.server.LDClient;
+
+              class A {
+                  void init() {
+                      LDClient client = new LDClient("sdk-key-123abc");
+                  }
+              }
+              """,
+            """
+              import com.launchdarkly.openfeature.serverprovider.Provider;
+              import dev.openfeature.sdk.Client;
+              import dev.openfeature.sdk.OpenFeatureAPI;
+
+              class A {
+                  void init() {
+                      OpenFeatureAPI.getInstance().setProviderAndWait(new Provider("sdk-key-123abc"));
+                      Client client = OpenFeatureAPI.getInstance().getClient();
+                  }
+              }
+              """
+          )
+        );
+    }
+
+    @Test
+    void fieldKeepsConfigurationInComment() {
         rewriteRun(
           //language=java
           java(
