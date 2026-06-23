@@ -37,10 +37,11 @@ import org.openrewrite.java.tree.TextComment;
 import org.openrewrite.marker.Markers;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 
 @EqualsAndHashCode(callSuper = false)
 @Value
@@ -108,12 +109,12 @@ public class MigrateLDClientToOpenFeature extends Recipe {
 
                 List<Expression> ldArgs = init.getArguments().stream()
                         .filter(a -> !(a instanceof J.Empty))
-                        .collect(Collectors.toList());
+                        .collect(toList());
                 // LDClient and Provider share the same parameter order: (String sdkKey[, LDConfig config]).
                 // Type the placeholders so the Provider constructor resolves and the new expression is attributed.
                 String placeholders = IntStream.range(0, ldArgs.size())
                         .mapToObj(i -> i == 0 ? "#{any(java.lang.String)}" : "#{any(com.launchdarkly.sdk.server.LDConfig)}")
-                        .collect(Collectors.joining(", "));
+                        .collect(joining(", "));
                 Statement providerSetup = JavaTemplate.builder(
                                 "OpenFeatureAPI.getInstance().setProviderAndWait(new Provider(" + placeholders + "))")
                         .imports("dev.openfeature.sdk.OpenFeatureAPI", "com.launchdarkly.openfeature.serverprovider.Provider")
@@ -149,7 +150,7 @@ public class MigrateLDClientToOpenFeature extends Recipe {
                 return nc.getArguments().stream()
                         .filter(a -> !(a instanceof J.Empty))
                         .map(a -> a.printTrimmed(getCursor()))
-                        .collect(Collectors.joining(", "));
+                        .collect(joining(", "));
             }
         });
     }
