@@ -119,7 +119,9 @@ public class MigrateLDClientToOpenFeature extends Recipe {
                                 "OpenFeatureAPI.getInstance().setProviderAndWait(new Provider(" + placeholders + "))")
                         .imports("dev.openfeature.sdk.OpenFeatureAPI", "com.launchdarkly.openfeature.serverprovider.Provider")
                         .javaParser(JavaParser.fromJavaVersion().classpathFromResources(ctx,
-                                "sdk-1.+", "launchdarkly-openfeature-serverprovider-1.+", "launchdarkly-java-server-sdk-6.+"))
+                                "sdk-1.+",
+                                "launchdarkly-openfeature-serverprovider-1.+",
+                                "launchdarkly-java-server-sdk-6.+"))
                         .build()
                         .apply(new Cursor(getCursor(), vd), vd.getCoordinates().replace(), ldArgs.toArray());
 
