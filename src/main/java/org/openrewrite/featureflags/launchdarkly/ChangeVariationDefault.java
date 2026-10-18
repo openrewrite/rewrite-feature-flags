@@ -22,13 +22,12 @@ import org.openrewrite.analysis.constantfold.ConstantFold;
 import org.openrewrite.analysis.util.CursorUtil;
 import org.openrewrite.internal.ListUtils;
 import org.openrewrite.java.JavaIsoVisitor;
+import org.openrewrite.java.JavaTemplate;
 import org.openrewrite.java.MethodMatcher;
 import org.openrewrite.java.search.UsesMethod;
 import org.openrewrite.java.tree.Expression;
 import org.openrewrite.java.tree.J;
-import org.openrewrite.java.tree.JavaType;
 import org.openrewrite.java.tree.Space;
-import org.openrewrite.marker.Markers;
 
 @EqualsAndHashCode(callSuper = false)
 @Value
@@ -62,16 +61,16 @@ public class ChangeVariationDefault extends Recipe {
                 Expression firstArgument = mi.getArguments().get(0);
                 Expression lastArgument = mi.getArguments().get(mi.getArguments().size() - 1);
                 if (BOOL_VARIATION_MATCHER.matches(mi) && isFeatureKey(firstArgument)) {
-                    return changeValue(mi, lastArgument, new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, defaultValue, null, JavaType.Primitive.Boolean));
+                    return changeValue(mi, lastArgument, defaultValue);
                 }
                 if (STRING_VARIATION_MATCHER.matches(mi) && isFeatureKey(firstArgument)) {
-                    return changeValue(mi, lastArgument, new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, "\"" + defaultValue + "\"", null, JavaType.Primitive.String));
+                    return changeValue(mi, lastArgument, "\"" + defaultValue + "\"");
                 }
                 if (INT_VARIATION_MATCHER.matches(mi) && isFeatureKey(firstArgument)) {
-                    return changeValue(mi, lastArgument, new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, defaultValue, null, JavaType.Primitive.Int));
+                    return changeValue(mi, lastArgument, defaultValue);
                 }
                 if (DOUBLE_VARIATION_MATCHER.matches(mi) && isFeatureKey(firstArgument)) {
-                    return changeValue(mi, lastArgument, new J.Literal(Tree.randomId(), Space.SINGLE_SPACE, Markers.EMPTY, defaultValue, defaultValue, null, JavaType.Primitive.Double));
+                    return changeValue(mi, lastArgument, defaultValue);
                 }
                 return mi;
             }
@@ -83,11 +82,13 @@ public class ChangeVariationDefault extends Recipe {
                         .orSome(false);
             }
 
-            private J.MethodInvocation changeValue(J.MethodInvocation mi, Expression existingValue, J.Literal newValue) {
-                if (existingValue instanceof J.Literal && newValue.getValueSource().equals(((J.Literal) existingValue).getValueSource())) {
+            private J.MethodInvocation changeValue(J.MethodInvocation mi, Expression existingValue, String newValueSource) {
+                if (newValueSource.equals(existingValue.withPrefix(Space.EMPTY).printTrimmed(getCursor()))) {
                     return mi; // No change needed
                 }
-                return mi.withArguments(ListUtils.mapLast(mi.getArguments(), a -> newValue.withPrefix(a.getPrefix())));
+                // the template gives the new value the tree the parser makes of its text, and the argument keeps its formatting
+                J.MethodInvocation changed = JavaTemplate.apply(newValueSource, updateCursor(mi), existingValue.getCoordinates().replace());
+                return changed.withArguments(ListUtils.mapLast(changed.getArguments(), a -> a.withPrefix(existingValue.getPrefix())));
             }
         };
         return Preconditions.check(
